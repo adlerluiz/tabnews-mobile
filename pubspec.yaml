@@ -1,0 +1,44 @@
+name: tabnews
+description: Conteúdos para quem trabalha com Programação e Tecnologia.
+
+publish_to: 'none'
+
+version: 1.0.3+4
+
+environment:
+  sdk: '>=2.18.5 <3.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.4
+
+  pull_to_refresh: ^2.0.0
+  infinite_scroll_pagination: ^3.2.0
+  http: ^0.13.5
+  shared_preferences: ^2.0.15
+  timeago: ^3.3.0
+  flutter_markdown: ^0.6.13
+  markdown_editable_textinput: ^2.1.0
+  markdown: ^6.0.1
+  url_launcher: ^6.1.7
+  app_links: ^3.4.1
+  share_plus: ^6.3.0
+  photo_view: ^0.14.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^2.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/logo.png
+    - assets/images/loading.gif
+    - assets/images/error.png
