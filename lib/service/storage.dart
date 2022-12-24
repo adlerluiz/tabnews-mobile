@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 class StorageService {
@@ -16,6 +17,14 @@ class StorageService {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     if (prefs.containsKey(key)) {
       return prefs.get(key);
+    }
+    return defaultValue;
+  }
+
+  Future<String> sharedPreferencesGetString(key, defaultValue) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (prefs.containsKey(key)) {
+      return prefs.getString(key) ?? defaultValue;
     }
     return defaultValue;
   }

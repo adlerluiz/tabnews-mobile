@@ -6,7 +6,7 @@ class CurrentTheme with ChangeNotifier {
   ThemeMode currentTheme = ThemeMode.system;
 
   CurrentTheme() {
-    storage.sharedPreferencesGet('theme', 'system').then(switchTheme);
+    storage.sharedPreferencesGetString('theme', 'system').then(switchTheme);
   }
 
   ThemeMode getCurrentTheme() => currentTheme;
