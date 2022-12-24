@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:tabnews/page/home.dart';
 import 'package:tabnews/service/global_current_theme.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() {
   runApp(const MyApp());
@@ -31,7 +31,7 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    String appName = 'TabNews';
+    const String appName = 'TabNews';
 
     return MaterialApp(
       localizationsDelegates: const [
@@ -50,7 +50,6 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
         scaffoldBackgroundColor: Colors.white,
         appBarTheme: const AppBarTheme(backgroundColor: Colors.white),
         colorScheme: ColorScheme.fromSeed(
-          brightness: Brightness.light,
           seedColor: Colors.blue,
         ),
       ),
@@ -62,7 +61,7 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
           seedColor: Colors.blue,
         ),
       ),
-      home: HomePage(appName: appName),
+      home: const HomePage(appName: appName),
     );
   }
 }

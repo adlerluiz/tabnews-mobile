@@ -53,8 +53,7 @@ class Content {
         children = json['children'],
         childrenDeepCount = json['children_deep_count'];
 
-  Map toJson() {
-    return {
+  Map toJson() => {
       'id': id,
       'owner_id': ownerId,
       'parent_id': parentId,
@@ -72,5 +71,4 @@ class Content {
       'children': children,
       'children_deep_count': childrenDeepCount,
     };
-  }
 }

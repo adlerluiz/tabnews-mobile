@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tabnews/page/register.dart';
-import 'package:tabnews/service/authenticated_http.dart';
 import 'package:tabnews/service/api_user.dart';
+import 'package:tabnews/service/authenticated_http.dart';
 import 'package:tabnews/service/messenger.dart';
 import 'package:tabnews/service/storage.dart';
 
@@ -38,16 +38,16 @@ class _LoginPageState extends State<LoginPage> {
     controllerPassword.dispose();
   }
 
-  void doLogin() async {
+  Future<void> doLogin() async {
     try {
       await auth.login(
         controllerEmail.value.text,
         controllerPassword.value.text,
       );
 
-      var result = await apiUser.getMe();
-      var userId = result['id'] ?? '';
-      var userUsername = result['username'] ?? '';
+      final result = await apiUser.getMe();
+      final userId = result['id'] ?? '';
+      final userUsername = result['username'] ?? '';
 
       await storage.sharedPreferencesAddString('user_id', userId);
       await storage.sharedPreferencesAddString('user_username', userUsername);
@@ -63,8 +63,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+  Widget build(BuildContext context) => Scaffold(
       appBar: AppBar(
         leading: GestureDetector(
           onTap: () {
@@ -141,7 +140,7 @@ class _LoginPageState extends State<LoginPage> {
                         });
                       },
                       child: Icon(
-                        (_obscurePassword)
+                        _obscurePassword
                             ? Icons.remove_red_eye
                             : Icons.emergency,
                         color: Colors.black38,
@@ -175,7 +174,7 @@ class _LoginPageState extends State<LoginPage> {
                         });
                       }
                     },
-                    child: (doingLogin)
+                    child: doingLogin
                         ? const CircularProgressIndicator(
                             color: Colors.white,
                           )
@@ -210,5 +209,4 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
     );
-  }
 }

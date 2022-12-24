@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-import 'package:tabnews/service/storage.dart';
 import 'package:tabnews/constants.dart' as constants;
+import 'package:tabnews/service/storage.dart';
 
 class AuthenticatedHttpClient extends http.BaseClient {
   StorageService storage = StorageService();
@@ -34,29 +34,29 @@ class AuthenticatedHttpClient extends http.BaseClient {
   }
 
   Future<bool> login(String email, String password) async {
-    var response =
+    final response =
         await http.post(Uri.parse('${constants.apiBaseUrl}/sessions'), body: {
       'email': email,
       'password': password,
     });
 
     if (response.statusCode == 201) {
-      dynamic body = jsonDecode(response.body);
+      final dynamic body = jsonDecode(response.body);
 
-      String token = body['token'];
-      String expiresAt = body['expires_at'];
-      storage.sharedPreferencesAddString('token', token);
-      storage.sharedPreferencesAddString('expires_at', expiresAt);
+      final String token = body['token'];
+      final String expiresAt = body['expires_at'];
+      await storage.sharedPreferencesAddString('token', token);
+      await storage.sharedPreferencesAddString('expires_at', expiresAt);
 
       return true;
     }
 
-    var result = jsonDecode(response.body);
+    final result = jsonDecode(response.body);
     throw result['message'];
   }
 
   Future<bool> register(String username, String email, String password) async {
-    var response =
+    final response =
         await http.post(Uri.parse('${constants.apiBaseUrl}/users'), body: {
       'username': username,
       'email': email,
@@ -67,14 +67,14 @@ class AuthenticatedHttpClient extends http.BaseClient {
       return true;
     }
 
-    var result = jsonDecode(response.body);
+    final result = jsonDecode(response.body);
     throw result['message'];
   }
 
   Future<bool> isLogged() async {
     bool isLogged = false;
 
-    var now = DateTime.now();
+    final now = DateTime.now();
     var expiresAt = await storage.sharedPreferencesGet('expires_at', '$now');
     expiresAt = DateTime.parse(expiresAt);
 

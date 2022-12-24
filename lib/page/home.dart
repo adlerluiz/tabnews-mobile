@@ -50,17 +50,11 @@ class _HomePageState extends State<HomePage>
     _navigationTabController = TabController(
         length: 3, initialIndex: _navigationTabPageIndex, vsync: this);
 
-    _favoritePagingController.addPageRequestListener((pageKey) {
-      _fetchFavoritePage(pageKey);
-    });
+    _favoritePagingController.addPageRequestListener(_fetchFavoritePage);
 
-    _relevantPagingController.addPageRequestListener((pageKey) {
-      _fetchRelevantPage(pageKey);
-    });
+    _relevantPagingController.addPageRequestListener(_fetchRelevantPage);
 
-    _recentPagingController.addPageRequestListener((pageKey) {
-      _fetchRecentPage(pageKey);
-    });
+    _recentPagingController.addPageRequestListener(_fetchRecentPage);
 
     _navigationTabController!.addListener(() {
       setState(() {
@@ -87,7 +81,7 @@ class _HomePageState extends State<HomePage>
 
       contentList = jsonDecode(contentList);
 
-      final isLastPage = (contentList.length != pageSize);
+      final isLastPage = contentList.length != pageSize;
 
       if (isLastPage) {
         _favoritePagingController.appendLastPage(contentList);
@@ -102,10 +96,10 @@ class _HomePageState extends State<HomePage>
 
   Future<void> _fetchRelevantPage(pageKey) async {
     try {
-      var contentList = await apiContent.getList(
-          pagina: pageKey, porPagina: pageSize, estrategia: 'relevant');
+      final contentList = await apiContent.getList(
+          pagina: pageKey, estrategia: 'relevant');
 
-      final isLastPage = (contentList.length != pageSize);
+      final isLastPage = contentList.length != pageSize;
 
       if (isLastPage) {
         _relevantPagingController.appendLastPage(contentList);
@@ -120,10 +114,10 @@ class _HomePageState extends State<HomePage>
 
   Future<void> _fetchRecentPage(pageKey) async {
     try {
-      var contentList =
-          await apiContent.getList(pagina: pageKey, porPagina: pageSize);
+      final contentList =
+          await apiContent.getList(pagina: pageKey);
 
-      final isLastPage = (contentList.length != pageSize);
+      final isLastPage = contentList.length != pageSize;
 
       if (isLastPage) {
         _recentPagingController.appendLastPage(contentList);
@@ -140,12 +134,11 @@ class _HomePageState extends State<HomePage>
     setState(() {
       _navigationTabPageIndex = index;
     });
-    _navigationTabController?.animateTo(index, curve: Curves.ease);
+    _navigationTabController?.animateTo(index);
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+  Widget build(BuildContext context) => Scaffold(
       appBar: AppBar(
         title: Text(widget.appName),
         actions: [
@@ -168,16 +161,14 @@ class _HomePageState extends State<HomePage>
         children: [
           RefreshIndicator(
             onRefresh: () => Future.sync(
-              () => _favoritePagingController.refresh(),
+              _favoritePagingController.refresh,
             ),
             child: PagedListView(
               pagingController: _favoritePagingController,
               reverse: true,
               builderDelegate: PagedChildBuilderDelegate<dynamic>(
-                noItemsFoundIndicatorBuilder: (context) {
-                  return Column(
+                noItemsFoundIndicatorBuilder: (context) => Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: const [
                       Text(
                         'Nenhum favorito encontrado',
@@ -190,13 +181,10 @@ class _HomePageState extends State<HomePage>
                         style: TextStyle(color: Colors.grey),
                       )
                     ],
-                  );
-                },
-                firstPageProgressIndicatorBuilder: (context) {
-                  return const LoadingContentImageBuilder();
-                },
+                  ),
+                firstPageProgressIndicatorBuilder: (context) => const LoadingContentImageBuilder(),
                 itemBuilder: (context, data, index) {
-                  Content item = Content.fromJson(data);
+                  final Content item = Content.fromJson(data);
 
                   return GenerateContentBuilder(
                     contentData: item,
@@ -210,17 +198,15 @@ class _HomePageState extends State<HomePage>
           ),
           RefreshIndicator(
             onRefresh: () => Future.sync(
-              () => _relevantPagingController.refresh(),
+              _relevantPagingController.refresh,
             ),
             child: Center(
               child: PagedListView(
                 pagingController: _relevantPagingController,
                 builderDelegate: PagedChildBuilderDelegate<dynamic>(
-                  firstPageProgressIndicatorBuilder: (context) {
-                    return const LoadingContentImageBuilder();
-                  },
+                  firstPageProgressIndicatorBuilder: (context) => const LoadingContentImageBuilder(),
                   itemBuilder: (context, data, index) {
-                    Content item = Content.fromJson(data);
+                    final Content item = Content.fromJson(data);
 
                     return GenerateContentBuilder(
                       contentData: item,
@@ -236,9 +222,7 @@ class _HomePageState extends State<HomePage>
               child: PagedListView(
                 pagingController: _recentPagingController,
                 builderDelegate: PagedChildBuilderDelegate<dynamic>(
-                  firstPageProgressIndicatorBuilder: (context) {
-                    return const LoadingContentImageBuilder();
-                  },
+                  firstPageProgressIndicatorBuilder: (context) => const LoadingContentImageBuilder(),
                   itemBuilder: (context, item, index) {
                     item = Content.fromJson(item);
 
@@ -251,7 +235,7 @@ class _HomePageState extends State<HomePage>
               ),
             ),
             onRefresh: () => Future.sync(
-              () => _recentPagingController.refresh(),
+              _recentPagingController.refresh,
             ),
           ),
         ],
@@ -294,5 +278,4 @@ class _HomePageState extends State<HomePage>
         ],
       ),
     );
-  }
 }

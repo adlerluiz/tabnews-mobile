@@ -56,8 +56,7 @@ class _ContentFormCommentPageState extends State<ContentFormCommentPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+  Widget build(BuildContext context) => Scaffold(
       appBar: AppBar(
         titleSpacing: 0,
         elevation: 1,
@@ -97,7 +96,7 @@ class _ContentFormCommentPageState extends State<ContentFormCommentPage> {
             ),
           ),
           TextButton(
-            child: (isSaving)
+            child: isSaving
                 ? const SizedBox(
                     width: 25,
                     height: 25,
@@ -140,7 +139,6 @@ class _ContentFormCommentPageState extends State<ContentFormCommentPage> {
                       },
                       comment,
                       label: 'Seu comentário',
-                      maxLines: 10,
                       actions: MarkdownType.values,
                       controller: mkdTextController,
                     ),
@@ -160,7 +158,6 @@ class _ContentFormCommentPageState extends State<ContentFormCommentPage> {
         ),
       ),
     );
-  }
 
   String limitText(String text, {int limit = 250}) {
     if (text.length > limit) {

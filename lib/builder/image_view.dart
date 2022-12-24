@@ -8,8 +8,7 @@ class ImageViewBuilder extends StatelessWidget {
   final String title;
 
   @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
+  Widget build(BuildContext context) => GestureDetector(
       onTap: () {
         Navigator.of(context).pop();
       },
@@ -17,5 +16,4 @@ class ImageViewBuilder extends StatelessWidget {
         imageProvider: NetworkImage(url),
       ),
     );
-  }
 }

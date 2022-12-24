@@ -22,7 +22,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
   bool doingRegister = false;
 
-  void doRegister() async {
+  Future<void> doRegister() async {
     try {
       await auth.register(
         controllerUsername.value.text,
@@ -42,8 +42,7 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+  Widget build(BuildContext context) => Scaffold(
       appBar: AppBar(
         titleSpacing: 0,
         leading: IconButton(
@@ -129,7 +128,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         });
                       },
                       child: Icon(
-                        (_obscurePassword)
+                        _obscurePassword
                             ? Icons.remove_red_eye
                             : Icons.emergency,
                         color: Colors.black38,
@@ -163,7 +162,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         });
                       }
                     },
-                    child: (doingRegister)
+                    child: doingRegister
                         ? const CircularProgressIndicator(
                             color: Colors.white,
                           )
@@ -188,7 +187,6 @@ class _RegisterPageState extends State<RegisterPage> {
         ),
       ),
     );
-  }
 
   @override
   void dispose() {

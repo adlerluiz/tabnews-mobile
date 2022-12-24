@@ -1,8 +1,7 @@
 import 'dart:convert';
 
-import 'package:tabnews/service/authenticated_http.dart';
-
 import 'package:tabnews/constants.dart' as constants;
+import 'package:tabnews/service/authenticated_http.dart';
 
 const String baseUrl = constants.apiBaseUrl;
 
@@ -17,7 +16,7 @@ class ApiUser {
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {
-      var result = jsonDecode(response.body);
+      final result = jsonDecode(response.body);
       throw result['message'];
     }
   }

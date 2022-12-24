@@ -24,8 +24,7 @@ class User {
         createdAt = json['created_at'],
         updatedAt = json['updated_at'];
 
-  Map toJson() {
-    return {
+  Map toJson() => {
       'id': id,
       'username': username,
       'email': email,
@@ -36,5 +35,4 @@ class User {
       'created_at': createdAt,
       'updated_at': updatedAt,
     };
-  }
 }

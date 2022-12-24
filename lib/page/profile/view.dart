@@ -26,10 +26,10 @@ class _ProfileViewPageState extends State<ProfileViewPage> {
 
   Future<void> _fetchContentList(pageKey) async {
     try {
-      var contentList =
+      final contentList =
           await apiContent.getByUser(widget.ownerUsername, pagina: pageKey);
 
-      final isLastPage = (contentList.length != pageSize);
+      final isLastPage = contentList.length != pageSize;
 
       if (isLastPage) {
         _contentListController.appendLastPage(contentList);
@@ -46,9 +46,7 @@ class _ProfileViewPageState extends State<ProfileViewPage> {
   void initState() {
     super.initState();
 
-    _contentListController.addPageRequestListener((pageKey) {
-      _fetchContentList(pageKey);
-    });
+    _contentListController.addPageRequestListener(_fetchContentList);
   }
 
   @override
@@ -57,8 +55,7 @@ class _ProfileViewPageState extends State<ProfileViewPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+  Widget build(BuildContext context) => Scaffold(
       appBar: AppBar(
         title: Text(
           'Atividades de ${widget.ownerUsername}',
@@ -68,16 +65,14 @@ class _ProfileViewPageState extends State<ProfileViewPage> {
       ),
       body: RefreshIndicator(
         onRefresh: () => Future.sync(
-          () => _contentListController.refresh(),
+          _contentListController.refresh,
         ),
         child: PagedListView(
           pagingController: _contentListController,
           builderDelegate: PagedChildBuilderDelegate<dynamic>(
-            firstPageProgressIndicatorBuilder: (context) {
-              return const LoadingContentImageBuilder();
-            },
+            firstPageProgressIndicatorBuilder: (context) => const LoadingContentImageBuilder(),
             itemBuilder: (context, data, index) {
-              Content item = Content.fromJson(data);
+              final Content item = Content.fromJson(data);
               return GenerateContentBuilder(
                 contentData: item,
                 index: index,
@@ -88,5 +83,4 @@ class _ProfileViewPageState extends State<ProfileViewPage> {
         ),
       ),
     );
-  }
 }
