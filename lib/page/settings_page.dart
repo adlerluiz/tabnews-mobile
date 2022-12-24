@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:tabnews/service/global_current_theme.dart';
 import 'package:tabnews/service/storage.dart';
 
@@ -15,6 +16,13 @@ class _SettingsPageState extends State<SettingsPage> {
   late String _theme = 'light';
   late String _launchUrlMode = 'internal';
 
+  late PackageInfo packageInfo = PackageInfo(
+    appName: 'Desconhecido',
+    packageName: 'Desconhecido',
+    buildNumber: 'Desconhecido',
+    version: 'Desconhecido',
+  );
+
   @override
   void initState() {
     super.initState();
@@ -26,6 +34,8 @@ class _SettingsPageState extends State<SettingsPage> {
     _theme = await storage.sharedPreferencesGet('theme', 'system');
     _launchUrlMode =
         await storage.sharedPreferencesGet('launch_url_mode', 'internal');
+
+    packageInfo = await PackageInfo.fromPlatform();
     setState(() {});
   }
 
@@ -185,6 +195,13 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                 ],
               ),
+              Padding(
+                padding: const EdgeInsets.only(top: 50),
+                child: Text(
+                  'v${packageInfo.version}',
+                  style: const TextStyle(color: Colors.grey, fontSize: 11),
+                ),
+              )
             ],
           ),
         ),

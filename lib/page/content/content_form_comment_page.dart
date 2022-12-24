@@ -40,7 +40,7 @@ class _ContentFormCommentPageState extends State<ContentFormCommentPage> {
     mkdTextController.dispose();
   }
 
-  save() async {
+  Future<void> save() async {
     try {
       await apiContent.postComment(mkdTextController.value.text, widget.id);
 
@@ -57,107 +57,107 @@ class _ContentFormCommentPageState extends State<ContentFormCommentPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-      appBar: AppBar(
-        titleSpacing: 0,
-        elevation: 1,
-        leading: IconButton(
-          icon: const Icon(Icons.close),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        title: const Text(
-          'Responder',
-          style: TextStyle(fontSize: 18),
-        ),
-        actions: [
-          Visibility(
-            visible: !showPreviewText,
-            child: IconButton(
-              tooltip: 'Visualizar',
-              icon: const Icon(Icons.remove_red_eye_outlined),
-              onPressed: () {
-                setState(() {
-                  showPreviewText = !showPreviewText;
-                });
-              },
-            ),
-          ),
-          Visibility(
-            visible: showPreviewText,
-            child: IconButton(
-              tooltip: 'Editar',
-              icon: const Icon(Icons.edit_outlined),
-              onPressed: () {
-                setState(() {
-                  showPreviewText = !showPreviewText;
-                });
-              },
-            ),
-          ),
-          TextButton(
-            child: isSaving
-                ? const SizedBox(
-                    width: 25,
-                    height: 25,
-                    child: CircularProgressIndicator(),
-                  )
-                : const Text('Postar'),
+        appBar: AppBar(
+          titleSpacing: 0,
+          elevation: 1,
+          leading: IconButton(
+            icon: const Icon(Icons.close),
             onPressed: () {
-              if (!isSaving) {
-                save();
-
-                setState(() {
-                  isSaving = true;
-                });
-              }
+              Navigator.pop(context);
             },
-          )
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
+          ),
+          title: const Text(
+            'Responder',
+            style: TextStyle(fontSize: 18),
+          ),
+          actions: [
             Visibility(
               visible: !showPreviewText,
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    MarkdownBody(
-                      data: limitText(widget.title),
-                      softLineBreak: true,
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.only(bottom: 14),
-                    ),
-                    MarkdownTextInput(
-                      (String value) {
-                        comment = value;
-                      },
-                      comment,
-                      label: 'Seu comentário',
-                      actions: MarkdownType.values,
-                      controller: mkdTextController,
-                    ),
-                  ],
-                ),
+              child: IconButton(
+                tooltip: 'Visualizar',
+                icon: const Icon(Icons.remove_red_eye_outlined),
+                onPressed: () {
+                  setState(() {
+                    showPreviewText = !showPreviewText;
+                  });
+                },
               ),
             ),
             Visibility(
               visible: showPreviewText,
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
-                child: MarkdownBody(data: comment),
+              child: IconButton(
+                tooltip: 'Editar',
+                icon: const Icon(Icons.edit_outlined),
+                onPressed: () {
+                  setState(() {
+                    showPreviewText = !showPreviewText;
+                  });
+                },
               ),
             ),
+            TextButton(
+              child: isSaving
+                  ? const SizedBox(
+                      width: 25,
+                      height: 25,
+                      child: CircularProgressIndicator(),
+                    )
+                  : const Text('Postar'),
+              onPressed: () {
+                if (!isSaving) {
+                  save();
+
+                  setState(() {
+                    isSaving = true;
+                  });
+                }
+              },
+            )
           ],
         ),
-      ),
-    );
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              Visibility(
+                visible: !showPreviewText,
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      MarkdownBody(
+                        data: limitText(widget.title),
+                        softLineBreak: true,
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.only(bottom: 14),
+                      ),
+                      MarkdownTextInput(
+                        (String value) {
+                          comment = value;
+                        },
+                        comment,
+                        label: 'Seu comentário',
+                        actions: MarkdownType.values,
+                        controller: mkdTextController,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Visibility(
+                visible: showPreviewText,
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
+                  child: MarkdownBody(data: comment),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
 
   String limitText(String text, {int limit = 250}) {
     if (text.length > limit) {

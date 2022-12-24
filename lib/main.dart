@@ -4,6 +4,7 @@ import 'package:tabnews/page/home_page.dart';
 import 'package:tabnews/service/global_current_theme.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 

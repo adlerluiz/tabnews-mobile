@@ -9,15 +9,13 @@ import 'package:tabnews/builder/image_view.dart';
 import 'package:tabnews/builder/loading_content_image.dart';
 import 'package:tabnews/constants.dart' as constants;
 import 'package:tabnews/model/content.dart';
-import 'package:tabnews/page/content/content_form_page.dart';
 import 'package:tabnews/page/content/content_form_comment_page.dart';
+import 'package:tabnews/page/content/content_form_page.dart';
 import 'package:tabnews/service/api_content.dart';
 import 'package:tabnews/service/messenger.dart';
 import 'package:tabnews/service/storage.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:url_launcher/url_launcher.dart';
-
-//GlobalKey commentsKey = GlobalKey();
 
 class ContentViewPage extends StatefulWidget {
   const ContentViewPage({super.key, required this.contentData});
@@ -472,13 +470,7 @@ class _ContentViewPageState extends State<ContentViewPage> {
                                   : Colors.white70,
                             ),
                           ),
-                          onPressed: () {
-                            /*Scrollable.ensureVisible(
-                              commentsKey.currentContext!,
-                              curve: Curves.easeInOut,
-                              duration: const Duration(milliseconds: 300),
-                            );*/
-                          },
+                          onPressed: () {},
                           icon: const Icon(
                             Icons.mode_comment_outlined,
                             size: 18,
@@ -488,7 +480,7 @@ class _ContentViewPageState extends State<ContentViewPage> {
                           ),
                         ),
                         const Padding(
-                          padding: EdgeInsets.only(),
+                          padding: EdgeInsets.zero,
                         ),
                         IconButton(
                           style: const ButtonStyle(
@@ -506,9 +498,35 @@ class _ContentViewPageState extends State<ContentViewPage> {
                         ),
                       ],
                     ),
-                    Visibility(
+                    /*Visibility(
                       visible: widget.contentData.childrenDeepCount! > 0,
                       child: const Divider(height: 1),
+                    ),*/
+                    SizedBox(
+                      width: double.infinity,
+                      height: 42,
+                      child: OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute<dynamic>(
+                              builder: (context) => ContentFormCommentPage(
+                                id: widget.contentData.id!,
+                                title: widget.contentData.title!,
+                              ),
+                            ),
+                          );
+                        },
+                        child: const Text('Responder'),
+                      ),
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.only(bottom: 5),
                     ),
                     Container(
                       //key: commentsKey,
@@ -531,7 +549,7 @@ class _ContentViewPageState extends State<ContentViewPage> {
                       ),
                     ),
                     const Padding(
-                      padding: EdgeInsets.only(bottom: 55),
+                      padding: EdgeInsets.only(bottom: 5),
                     ),
                   ],
                 ),
@@ -541,7 +559,7 @@ class _ContentViewPageState extends State<ContentViewPage> {
           return const LoadingContentImageBuilder();
         },
       ),
-      bottomSheet: ValueListenableBuilder(
+      /*bottomSheet: ValueListenableBuilder(
         valueListenable: canComment,
         builder: (context, value, child) => Visibility(
           visible: value,
@@ -551,7 +569,7 @@ class _ContentViewPageState extends State<ContentViewPage> {
             child: boxComment(),
           ),
         ),
-      ),
+      ),*/
     );
   }
 

@@ -59,6 +59,10 @@ class _HomePageState extends State<HomePage>
     _navigationTabController!.addListener(() {
       setState(() {
         _navigationTabPageIndex = _navigationTabController!.index;
+
+        if (_navigationTabController!.index == 0) {
+          _favoritePagingController.refresh();
+        }
       });
     });
   }
