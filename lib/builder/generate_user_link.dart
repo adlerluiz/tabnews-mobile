@@ -7,8 +7,7 @@ class GenerateUserLinkBuilder extends StatelessWidget {
   final String ownerUsername;
 
   @override
-  Widget build(BuildContext context) {
-    return Flexible(
+  Widget build(BuildContext context) => Flexible(
       child: InkWell(
         onTap: () {
           Navigator.push(
@@ -39,5 +38,4 @@ class GenerateUserLinkBuilder extends StatelessWidget {
         ),
       ),
     );
-  }
 }

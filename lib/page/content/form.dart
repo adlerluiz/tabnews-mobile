@@ -57,10 +57,10 @@ class _ContentFormPageState extends State<ContentFormPage> {
     titleFocusNode.dispose();
   }
 
-  void getEditData() async {
+  Future<void> getEditData() async {
     try {
-      var result = await apiContent.get(widget.ownerUsername, widget.slug);
-      Content data = Content.fromJson(result);
+      final result = await apiContent.get(widget.ownerUsername, widget.slug);
+      final Content data = Content.fromJson(result);
       titleTextController.text = data.title!;
       mkdTextController.text = data.body!;
       sourceTextController.text = data.sourceUrl!;
@@ -70,8 +70,7 @@ class _ContentFormPageState extends State<ContentFormPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+  Widget build(BuildContext context) => Scaffold(
       appBar: AppBar(
         titleSpacing: 0,
         elevation: 1,
@@ -82,7 +81,7 @@ class _ContentFormPageState extends State<ContentFormPage> {
           },
         ),
         title: Text(
-          '${(isEdit) ? 'Editar' : 'Publicar novo'} conteúdo',
+          '${isEdit ? 'Editar' : 'Publicar novo'} conteúdo',
           style: const TextStyle(fontSize: 18),
         ),
         actions: [
@@ -111,7 +110,7 @@ class _ContentFormPageState extends State<ContentFormPage> {
             ),
           ),
           TextButton(
-            child: (isSaving)
+            child: isSaving
                 ? const SizedBox(
                     width: 25,
                     height: 25,
@@ -232,9 +231,8 @@ class _ContentFormPageState extends State<ContentFormPage> {
         ),
       ),
     );
-  }
 
-  void save() async {
+  Future<void> save() async {
     try {
       if (isEdit) {
         await apiContent.patchContent(

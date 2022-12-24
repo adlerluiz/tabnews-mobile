@@ -1,8 +1,7 @@
 import 'dart:convert';
 
-import 'package:tabnews/service/authenticated_http.dart';
-
 import 'package:tabnews/constants.dart' as constants;
+import 'package:tabnews/service/authenticated_http.dart';
 
 const String baseUrl = constants.apiBaseUrl;
 
@@ -18,7 +17,7 @@ class ApiContent {
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {
-      var result = jsonDecode(response.body);
+      final result = jsonDecode(response.body);
       throw result['message'];
     }
   }
@@ -56,12 +55,12 @@ class ApiContent {
 
     response = await _httpClient.post(
         Uri.parse('$baseUrl/contents/$ownerUsername/$slug/tabcoins'),
-        body: {"transaction_type": transactionType});
+        body: {'transaction_type': transactionType});
 
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {
-      var result = jsonDecode(response.body);
+      final result = jsonDecode(response.body);
       throw result['message'];
     }
   }
@@ -84,10 +83,10 @@ class ApiContent {
       {String status = 'published'}) async {
     dynamic response;
 
-    var payload = {
-      "title": title,
-      "body": body,
-      "status": status,
+    final payload = {
+      'title': title,
+      'body': body,
+      'status': status,
     };
 
     if (sourceUrl != '') {
@@ -100,7 +99,7 @@ class ApiContent {
     if (response.statusCode == 201) {
       return jsonDecode(response.body);
     } else {
-      var result = jsonDecode(response.body);
+      final result = jsonDecode(response.body);
       throw result['message'];
     }
   }
@@ -110,10 +109,10 @@ class ApiContent {
       {String status = 'published'}) async {
     dynamic response;
 
-    var payload = {
-      "title": title,
-      "body": body,
-      "status": status,
+    final payload = {
+      'title': title,
+      'body': body,
+      'status': status,
     };
 
     if (sourceUrl != '') {
@@ -127,7 +126,7 @@ class ApiContent {
     if (response.statusCode == 201) {
       return jsonDecode(response.body);
     } else {
-      var result = jsonDecode(response.body);
+      final result = jsonDecode(response.body);
       throw result['message'];
     }
   }
@@ -136,8 +135,8 @@ class ApiContent {
       {String status = 'deleted'}) async {
     dynamic response;
 
-    var payload = {
-      "status": status,
+    final payload = {
+      'status': status,
     };
 
     response = await _httpClient.patch(
@@ -147,7 +146,7 @@ class ApiContent {
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {
-      var result = jsonDecode(response.body);
+      final result = jsonDecode(response.body);
       throw result['message'];
     }
   }
@@ -157,15 +156,15 @@ class ApiContent {
     dynamic response;
 
     response = await _httpClient.post(Uri.parse('$baseUrl/contents'), body: {
-      "body": body,
-      "parent_id": parentId,
-      "status": status,
+      'body': body,
+      'parent_id': parentId,
+      'status': status,
     });
 
     if (response.statusCode == 201) {
       return jsonDecode(response.body);
     } else {
-      var result = jsonDecode(response.body);
+      final result = jsonDecode(response.body);
       throw result['message'];
     }
   }

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class MessengerService {
   void show(context, {String text = '', int duration = 2}) {
-    SnackBar snackBar = SnackBar(
+    final SnackBar snackBar = SnackBar(
       content: Text(text),
       duration: Duration(seconds: duration),
     );

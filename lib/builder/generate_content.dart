@@ -46,11 +46,11 @@ class GenerateContentBuilder extends StatelessWidget {
       ),
       minLeadingWidth: 16,
       title: Text(
-        (isComment) ? '💬 "${contentData.body}"' : '${contentData.title}',
+        isComment ? '💬 "${contentData.body}"' : '${contentData.title}',
         style: TextStyle(
           fontSize: 14,
-          fontWeight: (isComment) ? FontWeight.normal : FontWeight.w500,
-          fontStyle: (isComment) ? FontStyle.italic : FontStyle.normal,
+          fontWeight: isComment ? FontWeight.normal : FontWeight.w500,
+          fontStyle: isComment ? FontStyle.italic : FontStyle.normal,
         ),
         maxLines: 3,
         overflow: TextOverflow.ellipsis,

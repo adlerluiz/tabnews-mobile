@@ -43,8 +43,7 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+  Widget build(BuildContext context) => Scaffold(
       appBar: AppBar(
         titleSpacing: 0,
         title: const Text('Configurações', style: TextStyle(fontSize: 18)),
@@ -53,14 +52,14 @@ class _SettingsPageState extends State<SettingsPage> {
         child: Column(
           children: [
             const ListTile(
-              title: Text("Tema"),
-              subtitle: Text("Tema padrão do app"),
+              title: Text('Tema'),
+              subtitle: Text('Tema padrão do app'),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Tooltip(
-                  message: "Claro",
+                  message: 'Claro',
                   child: ElevatedButton(
                     style: ButtonStyle(
                       foregroundColor: MaterialStateProperty.all(
@@ -84,7 +83,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                 ),
                 Tooltip(
-                  message: "Escuro",
+                  message: 'Escuro',
                   child: ElevatedButton(
                     style: ButtonStyle(
                       foregroundColor: MaterialStateProperty.all(
@@ -108,7 +107,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                 ),
                 Tooltip(
-                  message: "Automático",
+                  message: 'Automático',
                   child: ElevatedButton(
                     style: ButtonStyle(
                       foregroundColor: MaterialStateProperty.all(
@@ -134,14 +133,14 @@ class _SettingsPageState extends State<SettingsPage> {
               ],
             ),
             const ListTile(
-              title: Text("Abrir link"),
-              subtitle: Text("Escolha como abrir os links"),
+              title: Text('Abrir link'),
+              subtitle: Text('Escolha como abrir os links'),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Tooltip(
-                  message: "App",
+                  message: 'App',
                   child: ElevatedButton(
                     style: ButtonStyle(
                       foregroundColor: MaterialStateProperty.all(
@@ -163,7 +162,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                 ),
                 Tooltip(
-                  message: "Navegador",
+                  message: 'Navegador',
                   child: ElevatedButton(
                     style: ButtonStyle(
                       foregroundColor: MaterialStateProperty.all(
@@ -190,5 +189,4 @@ class _SettingsPageState extends State<SettingsPage> {
         ),
       ),
     );
-  }
 }

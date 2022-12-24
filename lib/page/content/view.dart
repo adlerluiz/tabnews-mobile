@@ -1,21 +1,21 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:markdown/markdown.dart' as md;
+import 'package:share_plus/share_plus.dart';
 import 'package:tabnews/builder/generate_user_link.dart';
 import 'package:tabnews/builder/image_view.dart';
 import 'package:tabnews/builder/loading_content_image.dart';
+import 'package:tabnews/constants.dart' as constants;
 import 'package:tabnews/model/content.dart';
 import 'package:tabnews/page/content/form.dart';
 import 'package:tabnews/page/content/form_comment.dart';
 import 'package:tabnews/service/api_content.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:tabnews/service/messenger.dart';
 import 'package:tabnews/service/storage.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:timeago/timeago.dart' as timeago;
-import 'package:markdown/markdown.dart' as md;
-import 'package:tabnews/constants.dart' as constants;
+import 'package:url_launcher/url_launcher.dart';
 
 //GlobalKey commentsKey = GlobalKey();
 
@@ -67,8 +67,8 @@ class _ContentViewPageState extends State<ContentViewPage> {
     getTypeLaunchMode();
   }
 
-  void getParams() async {
-    String userId = await storage.sharedPreferencesGet('user_id', '');
+  Future<void> getParams() async {
+    final String userId = await storage.sharedPreferencesGet('user_id', '');
     if (userId == widget.contentData.ownerId!) {
       setState(() {
         canEdit = true;
@@ -76,8 +76,8 @@ class _ContentViewPageState extends State<ContentViewPage> {
     }
   }
 
-  void getTypeLaunchMode() async {
-    var typeLaunchUrlMode =
+  Future<void> getTypeLaunchMode() async {
+    final typeLaunchUrlMode =
         await storage.sharedPreferencesGet('launch_url_mode', 'internal');
 
     if (typeLaunchUrlMode == 'internal') {
@@ -88,7 +88,7 @@ class _ContentViewPageState extends State<ContentViewPage> {
   }
 
   getFavoriteList() async {
-    var result = await storage.sharedPreferencesGet('favorite_list', '[]');
+    final result = await storage.sharedPreferencesGet('favorite_list', '[]');
 
     setState(() {
       dataList = jsonDecode(result);
@@ -96,7 +96,7 @@ class _ContentViewPageState extends State<ContentViewPage> {
     indexFavorite = getIndexFromFavorite(widget.contentData.id!);
   }
 
-  void removeFromFavorite(int index) async {
+  Future<void> removeFromFavorite(int index) async {
     dataList.removeAt(index);
 
     setState(() {
@@ -107,7 +107,7 @@ class _ContentViewPageState extends State<ContentViewPage> {
         'favorite_list', jsonEncode(dataList));
   }
 
-  void addToFavorite(Content content) async {
+  Future<void> addToFavorite(Content content) async {
     dataList.add(content.toJson());
     setState(() {
       indexFavorite = getIndexFromFavorite(widget.contentData.id!);
@@ -120,7 +120,7 @@ class _ContentViewPageState extends State<ContentViewPage> {
   int getIndexFromFavorite(String id) {
     if (dataList.isNotEmpty) {
       for (var i = 0; i < dataList.length; i++) {
-        Content content = Content.fromJson(dataList[i]);
+        final Content content = Content.fromJson(dataList[i]);
         if (id == content.id) {
           return i;
         }
@@ -140,7 +140,7 @@ class _ContentViewPageState extends State<ContentViewPage> {
     }
   }
 
-  void removeContent() async {
+  Future<void> removeContent() async {
     try {
       await apiContent.deleteContent(
           widget.contentData.ownerUsername!, widget.contentData.slug!);
@@ -153,7 +153,7 @@ class _ContentViewPageState extends State<ContentViewPage> {
   }
 
   Future<dynamic> getCommentList() async {
-    List commentListData = await apiContent.getComments(
+    final List commentListData = await apiContent.getComments(
         widget.contentData.ownerUsername!, widget.contentData.slug!);
     return commentListData;
   }
@@ -177,9 +177,7 @@ class _ContentViewPageState extends State<ContentViewPage> {
       case 1:
         showDialog<void>(
           context: context,
-          barrierDismissible: true,
-          builder: (BuildContext context) {
-            return AlertDialog(
+          builder: (BuildContext context) => AlertDialog(
               title: const Text('Você tem certeza?'),
               content: SingleChildScrollView(
                 child: ListBody(
@@ -203,8 +201,7 @@ class _ContentViewPageState extends State<ContentViewPage> {
                   },
                 ),
               ],
-            );
-          },
+            ),
         );
         break;
     }
@@ -212,17 +209,16 @@ class _ContentViewPageState extends State<ContentViewPage> {
 
   @override
   Widget build(BuildContext context) {
-    var screenWidth = MediaQuery.of(context).size.width;
+    final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 0,
         title: ValueListenableBuilder(
           valueListenable: hasScrolled,
-          builder: (context, value, child) {
-            return AnimatedOpacity(
+          builder: (context, value, child) => AnimatedOpacity(
               duration: const Duration(milliseconds: 300),
-              opacity: (value) ? 1 : 0,
+              opacity: value ? 1 : 0,
               child: Text(
                 '${widget.contentData.title ?? widget.contentData.body}',
                 style: const TextStyle(
@@ -230,8 +226,7 @@ class _ContentViewPageState extends State<ContentViewPage> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-            );
-          },
+            ),
         ),
         actions: [
           IconButton(
@@ -256,12 +251,9 @@ class _ContentViewPageState extends State<ContentViewPage> {
             visible: canEdit,
             child: PopupMenuButton(
               elevation: 3.2,
-              onSelected: (dynamic value) {
-                selectMenuItem(value);
-              },
+              onSelected: selectMenuItem,
               tooltip: 'Opções',
-              itemBuilder: (BuildContext context) {
-                return [
+              itemBuilder: (BuildContext context) => [
                   PopupMenuItem(
                     value: 0,
                     child: Row(
@@ -296,8 +288,7 @@ class _ContentViewPageState extends State<ContentViewPage> {
                       ],
                     ),
                   ),
-                ];
-              },
+                ],
               child: const SizedBox(
                 width: 48,
                 child: Icon(
@@ -315,7 +306,6 @@ class _ContentViewPageState extends State<ContentViewPage> {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
                     widget.contentData.title!,
@@ -342,7 +332,7 @@ class _ContentViewPageState extends State<ContentViewPage> {
             );
           }
           if (snapshot.hasData) {
-            Content data = Content.fromJson(snapshot.data);
+            final Content data = Content.fromJson(snapshot.data);
             bool isComment = false;
             if (data.parentId != null) isComment = true;
 
@@ -357,7 +347,7 @@ class _ContentViewPageState extends State<ContentViewPage> {
                       padding: EdgeInsets.only(top: 3),
                     ),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 0),
+                      padding: const EdgeInsets.symmetric(),
                       child: Row(
                         children: [
                           GenerateUserLinkBuilder(
@@ -382,11 +372,11 @@ class _ContentViewPageState extends State<ContentViewPage> {
                       child: Container(
                         decoration: const BoxDecoration(
                           border: Border(
-                            left: BorderSide(color: Colors.grey, width: 1),
+                            left: BorderSide(color: Colors.grey),
                           ),
                         ),
                         padding: const EdgeInsets.only(left: 4),
-                        child: (isComment)
+                        child: isComment
                             ? MarkdownBody(
                                 data: '💬 ${data.body}',
                                 onTapLink: (text, href, title) {
@@ -397,7 +387,7 @@ class _ContentViewPageState extends State<ContentViewPage> {
                                 '${data.title}',
                                 style: TextStyle(
                                   fontSize: 17,
-                                  fontWeight: (isComment)
+                                  fontWeight: isComment
                                       ? FontWeight.normal
                                       : FontWeight.w500,
                                 ),
@@ -412,7 +402,7 @@ class _ContentViewPageState extends State<ContentViewPage> {
                       padding: EdgeInsets.only(top: 12),
                     ),
                     Visibility(
-                      visible: (data.sourceUrl != null),
+                      visible: data.sourceUrl != null,
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -454,7 +444,7 @@ class _ContentViewPageState extends State<ContentViewPage> {
                             IconButton(
                               tooltip: 'Creditar TabCoin',
                               onPressed: () async {
-                                thumbPost('credit');
+                                await thumbPost('credit');
                               },
                               icon: const Icon(Icons.keyboard_arrow_up_rounded),
                             ),
@@ -464,7 +454,7 @@ class _ContentViewPageState extends State<ContentViewPage> {
                             IconButton(
                               tooltip: 'Debitar TabCoin',
                               onPressed: () async {
-                                thumbPost('debit');
+                                await thumbPost('debit');
                               },
                               icon:
                                   const Icon(Icons.keyboard_arrow_down_rounded),
@@ -498,7 +488,7 @@ class _ContentViewPageState extends State<ContentViewPage> {
                           ),
                         ),
                         const Padding(
-                          padding: EdgeInsets.only(right: 0),
+                          padding: EdgeInsets.only(),
                         ),
                         IconButton(
                           style: const ButtonStyle(
@@ -528,7 +518,7 @@ class _ContentViewPageState extends State<ContentViewPage> {
                         future: getCommentList(),
                         builder: (context, snapshot) {
                           if (snapshot.hasData) {
-                            var data = snapshot.data;
+                            final data = snapshot.data;
 
                             if (data.length != 0) {
                               return boxCommentList(data);
@@ -553,16 +543,14 @@ class _ContentViewPageState extends State<ContentViewPage> {
       ),
       bottomSheet: ValueListenableBuilder(
         valueListenable: canComment,
-        builder: (context, value, child) {
-          return Visibility(
+        builder: (context, value, child) => Visibility(
             visible: value,
             child: SizedBox(
               height: 50,
               width: screenWidth,
               child: boxComment(),
             ),
-          );
-        },
+          ),
       ),
     );
   }
@@ -573,8 +561,7 @@ class _ContentViewPageState extends State<ContentViewPage> {
     }
   }
 
-  Widget boxComment() {
-    return GestureDetector(
+  Widget boxComment() => GestureDetector(
       onTap: () {
         Navigator.push(
           context,
@@ -607,16 +594,14 @@ class _ContentViewPageState extends State<ContentViewPage> {
         ),
       ),
     );
-  }
 
-  Widget boxCommentList(data, {isChild = false}) {
-    return ListView.builder(
+  Widget boxCommentList(data, {isChild = false}) => ListView.builder(
       physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       itemCount: data.length,
       itemBuilder: (context, index) {
-        var item = Content.fromJson(data[index]);
-        var hasChildren = (item.children!.isNotEmpty);
+        final item = Content.fromJson(data[index]);
+        final hasChildren = item.children!.isNotEmpty;
 
         return Card(
           elevation: 0,
@@ -624,14 +609,13 @@ class _ContentViewPageState extends State<ContentViewPage> {
             decoration: BoxDecoration(
               border: Border(
                 left: BorderSide(
-                  color: (isChild)
+                  color: isChild
                       ? const Color.fromARGB(100, 158, 158, 158)
                       : Colors.transparent,
                 ),
               ),
             ),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(
@@ -641,7 +625,7 @@ class _ContentViewPageState extends State<ContentViewPage> {
                       IconButton(
                         tooltip: 'Creditar TabCoin',
                         onPressed: () async {
-                          thumbComment(item, 'credit');
+                          await thumbComment(item, 'credit');
                         },
                         icon: const Icon(
                           Icons.keyboard_arrow_up_rounded,
@@ -654,7 +638,7 @@ class _ContentViewPageState extends State<ContentViewPage> {
                       IconButton(
                         tooltip: 'Debitar TabCoin',
                         onPressed: () async {
-                          thumbComment(item, 'debit');
+                          await thumbComment(item, 'debit');
                         },
                         icon: const Icon(
                           Icons.keyboard_arrow_down_rounded,
@@ -731,18 +715,16 @@ class _ContentViewPageState extends State<ContentViewPage> {
         );
       },
     );
-  }
 
   void share(Content data) {
-    var user = data.ownerUsername;
-    var slug = data.slug;
-    var title = data.title;
+    final user = data.ownerUsername;
+    final slug = data.slug;
+    final title = data.title;
 
     Share.share('${constants.baseUrl}/$user/$slug', subject: '$title');
   }
 
-  Widget showMarkdownData(body) {
-    return MarkdownBody(
+  Widget showMarkdownData(body) => MarkdownBody(
       data: body,
       selectable: true,
       onTapLink: (text, href, title) {
@@ -756,8 +738,7 @@ class _ContentViewPageState extends State<ContentViewPage> {
         ...md.ExtensionSet.gitHubWeb.inlineSyntaxes,
         ...md.ExtensionSet.gitHubFlavored.inlineSyntaxes
       ],
-      imageBuilder: (uri, title, alt) {
-        return GestureDetector(
+      imageBuilder: (uri, title, alt) => GestureDetector(
           onTap: () {
             Navigator.push(
               context,
@@ -785,8 +766,7 @@ class _ContentViewPageState extends State<ContentViewPage> {
               );
               //return const LoadingContentImageHelper(size: 40);
             },
-            errorBuilder: (context, error, stackTrace) {
-              return Container(
+            errorBuilder: (context, error, stackTrace) => Container(
                 color: Colors.white,
                 child: Padding(
                   padding: const EdgeInsets.all(8),
@@ -800,15 +780,12 @@ class _ContentViewPageState extends State<ContentViewPage> {
                     ],
                   ),
                 ),
-              );
-            },
+              ),
           ),
-        );
-      },
+        ),
     );
-  }
 
-  void thumbPost(String transactionType) async {
+  Future<void> thumbPost(String transactionType) async {
     try {
       await apiContent.postTabcoinTransaction(
         widget.contentData.ownerUsername!,
@@ -822,7 +799,7 @@ class _ContentViewPageState extends State<ContentViewPage> {
     }
   }
 
-  void thumbComment(Content item, String transactionType) async {
+  Future<void> thumbComment(Content item, String transactionType) async {
     try {
       await apiContent.postTabcoinTransaction(
         item.ownerUsername!,

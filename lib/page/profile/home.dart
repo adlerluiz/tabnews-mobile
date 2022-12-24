@@ -7,9 +7,9 @@ import 'package:tabnews/model/user.dart';
 import 'package:tabnews/page/content/form.dart';
 import 'package:tabnews/page/login.dart';
 import 'package:tabnews/page/settings.dart';
-import 'package:tabnews/service/authenticated_http.dart';
 import 'package:tabnews/service/api_content.dart';
 import 'package:tabnews/service/api_user.dart';
+import 'package:tabnews/service/authenticated_http.dart';
 import 'package:tabnews/service/storage.dart';
 
 const pageSize = 30;
@@ -44,9 +44,9 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
 
   Future<void> _fetchContentList(pageKey) async {
     try {
-      var contentList = await apiContent.getByUser(username, pagina: pageKey);
+      final contentList = await apiContent.getByUser(username, pagina: pageKey);
 
-      final isLastPage = (contentList.length != pageSize);
+      final isLastPage = contentList.length != pageSize;
 
       if (isLastPage) {
         _contentListController.appendLastPage(contentList);
@@ -64,9 +64,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
     super.initState();
     getUsername();
     checkIsLogged();
-    _contentListController.addPageRequestListener((pageKey) {
-      _fetchContentList(pageKey);
-    });
+    _contentListController.addPageRequestListener(_fetchContentList);
   }
 
   Future getData() async {
@@ -79,8 +77,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+  Widget build(BuildContext context) => Scaffold(
       appBar: AppBar(
         titleSpacing: 0,
         title: const Text(
@@ -102,8 +99,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
           ),
           ValueListenableBuilder(
             valueListenable: valueNotifierIsLogged,
-            builder: (context, value, child) {
-              return Visibility(
+            builder: (context, value, child) => Visibility(
                 visible: value,
                 child: IconButton(
                   onPressed: () {
@@ -116,8 +112,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                     color: Colors.redAccent,
                   ),
                 ),
-              );
-            },
+              ),
           ),
         ],
       ),
@@ -126,7 +121,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.hasData) {
-              User data = User.fromJson(snapshot.data);
+              final User data = User.fromJson(snapshot.data);
 
               return Center(
                 child: Column(
@@ -213,16 +208,13 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                     Expanded(
                       child: RefreshIndicator(
                         onRefresh: () => Future.sync(
-                          () => _contentListController.refresh(),
+                          _contentListController.refresh,
                         ),
                         child: PagedListView(
                           pagingController: _contentListController,
                           builderDelegate: PagedChildBuilderDelegate<dynamic>(
-                            firstPageProgressIndicatorBuilder: (context) {
-                              return const LoadingContentImageBuilder();
-                            },
-                            noItemsFoundIndicatorBuilder: (context) {
-                              return Center(
+                            firstPageProgressIndicatorBuilder: (context) => const LoadingContentImageBuilder(),
+                            noItemsFoundIndicatorBuilder: (context) => Center(
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
@@ -261,10 +253,9 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                                     )
                                   ],
                                 ),
-                              );
-                            },
+                              ),
                             itemBuilder: (context, data, index) {
-                              Content item = Content.fromJson(data);
+                              final Content item = Content.fromJson(data);
                               return GenerateContentBuilder(
                                 contentData: item,
                                 index: index,
@@ -283,7 +274,6 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const Text('Para ver seu perfil, é necessário estar logado'),
                   const Padding(
@@ -316,5 +306,4 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
         },
       ),
     );
-  }
 }
