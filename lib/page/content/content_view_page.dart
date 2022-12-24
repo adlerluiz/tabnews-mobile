@@ -43,7 +43,7 @@ class _ContentViewPageState extends State<ContentViewPage> {
 
   late bool showResponseButton = true;
 
-  ValueNotifier<bool> canComment = ValueNotifier(false);
+  //ValueNotifier<bool> canComment = ValueNotifier(false);
 
   LaunchMode launchUrlMode = LaunchMode.inAppWebView;
 
@@ -129,11 +129,11 @@ class _ContentViewPageState extends State<ContentViewPage> {
 
   Future<dynamic> getData() async {
     try {
-      canComment.value = true;
+      //canComment.value = true;
       return await apiContent.get(
           widget.contentData.ownerUsername!, widget.contentData.slug!);
     } catch (e) {
-      canComment.value = false;
+      //canComment.value = false;
       return Future.error(e);
     }
   }
@@ -517,7 +517,8 @@ class _ContentViewPageState extends State<ContentViewPage> {
                             MaterialPageRoute<dynamic>(
                               builder: (context) => ContentFormCommentPage(
                                 id: widget.contentData.id!,
-                                title: widget.contentData.title!,
+                                title: widget.contentData.title ??
+                                    widget.contentData.body!,
                               ),
                             ),
                           );
