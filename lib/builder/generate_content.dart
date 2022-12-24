@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tabnews/model/content.dart';
-import 'package:tabnews/page/content/view.dart';
+import 'package:tabnews/page/content/content_view_page.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class GenerateContentBuilder extends StatelessWidget {

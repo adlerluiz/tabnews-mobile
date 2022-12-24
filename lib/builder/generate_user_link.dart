@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tabnews/page/profile/view.dart';
+import 'package:tabnews/page/profile/profile_view_page.dart';
 
 class GenerateUserLinkBuilder extends StatelessWidget {
   const GenerateUserLinkBuilder({super.key, required this.ownerUsername});
@@ -8,34 +8,34 @@ class GenerateUserLinkBuilder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Flexible(
-      child: InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ProfileViewPage(
-                ownerUsername: ownerUsername,
+        child: InkWell(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ProfileViewPage(
+                  ownerUsername: ownerUsername,
+                ),
               ),
+            );
+          },
+          borderRadius: const BorderRadius.all(Radius.circular(6)),
+          child: Container(
+            padding: const EdgeInsets.symmetric(
+              vertical: 1,
+              horizontal: 5,
             ),
-          );
-        },
-        borderRadius: const BorderRadius.all(Radius.circular(6)),
-        child: Container(
-          padding: const EdgeInsets.symmetric(
-            vertical: 1,
-            horizontal: 5,
-          ),
-          decoration: const BoxDecoration(
-            color: Color.fromARGB(50, 33, 149, 243),
-            borderRadius: BorderRadius.all(Radius.circular(6)),
-          ),
-          child: Text(
-            ownerUsername,
-            overflow: TextOverflow.ellipsis,
-            softWrap: true,
-            maxLines: 1,
+            decoration: const BoxDecoration(
+              color: Color.fromARGB(50, 33, 149, 243),
+              borderRadius: BorderRadius.all(Radius.circular(6)),
+            ),
+            child: Text(
+              ownerUsername,
+              overflow: TextOverflow.ellipsis,
+              softWrap: true,
+              maxLines: 1,
+            ),
           ),
         ),
-      ),
-    );
+      );
 }

@@ -9,9 +9,7 @@ final _httpClient = AuthenticatedHttpClient();
 
 class ApiUser {
   Future<dynamic> getMe() async {
-    dynamic response;
-
-    response = await _httpClient.get(Uri.parse('$baseUrl/user'));
+    final response = await _httpClient.get(Uri.parse('$baseUrl/user'));
 
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
@@ -22,9 +20,7 @@ class ApiUser {
   }
 
   Future<dynamic> getUser(String ownerUsername) async {
-    dynamic response;
-
-    response =
+    final response =
         await _httpClient.get(Uri.parse('$baseUrl/users/$ownerUsername'));
 
     if (response.statusCode == 200) {

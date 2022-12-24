@@ -9,8 +9,8 @@ import 'package:tabnews/builder/image_view.dart';
 import 'package:tabnews/builder/loading_content_image.dart';
 import 'package:tabnews/constants.dart' as constants;
 import 'package:tabnews/model/content.dart';
-import 'package:tabnews/page/content/form.dart';
-import 'package:tabnews/page/content/form_comment.dart';
+import 'package:tabnews/page/content/content_form_page.dart';
+import 'package:tabnews/page/content/content_form_comment_page.dart';
 import 'package:tabnews/service/api_content.dart';
 import 'package:tabnews/service/messenger.dart';
 import 'package:tabnews/service/storage.dart';
@@ -178,30 +178,30 @@ class _ContentViewPageState extends State<ContentViewPage> {
         showDialog<void>(
           context: context,
           builder: (BuildContext context) => AlertDialog(
-              title: const Text('Você tem certeza?'),
-              content: SingleChildScrollView(
-                child: ListBody(
-                  children: const <Widget>[
-                    Text('Você realmente deseja apagar esta publicação?'),
-                  ],
-                ),
+            title: const Text('Você tem certeza?'),
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: const <Widget>[
+                  Text('Você realmente deseja apagar esta publicação?'),
+                ],
               ),
-              actions: <Widget>[
-                TextButton(
-                  child: const Text('Não'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-                TextButton(
-                  child: const Text('Sim'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    removeContent();
-                  },
-                ),
-              ],
             ),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('Não'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+              TextButton(
+                child: const Text('Sim'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  removeContent();
+                },
+              ),
+            ],
+          ),
         );
         break;
     }
@@ -217,16 +217,16 @@ class _ContentViewPageState extends State<ContentViewPage> {
         title: ValueListenableBuilder(
           valueListenable: hasScrolled,
           builder: (context, value, child) => AnimatedOpacity(
-              duration: const Duration(milliseconds: 300),
-              opacity: value ? 1 : 0,
-              child: Text(
-                '${widget.contentData.title ?? widget.contentData.body}',
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                ),
+            duration: const Duration(milliseconds: 300),
+            opacity: value ? 1 : 0,
+            child: Text(
+              '${widget.contentData.title ?? widget.contentData.body}',
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
               ),
             ),
+          ),
         ),
         actions: [
           IconButton(
@@ -254,41 +254,41 @@ class _ContentViewPageState extends State<ContentViewPage> {
               onSelected: selectMenuItem,
               tooltip: 'Opções',
               itemBuilder: (BuildContext context) => [
-                  PopupMenuItem(
-                    value: 0,
-                    child: Row(
-                      children: const [
-                        Padding(
-                          padding: EdgeInsets.only(right: 12),
-                          child: Icon(
-                            Icons.edit_outlined,
-                            size: 19,
-                          ),
+                PopupMenuItem(
+                  value: 0,
+                  child: Row(
+                    children: const [
+                      Padding(
+                        padding: EdgeInsets.only(right: 12),
+                        child: Icon(
+                          Icons.edit_outlined,
+                          size: 19,
                         ),
-                        Text('Editar')
-                      ],
-                    ),
+                      ),
+                      Text('Editar')
+                    ],
                   ),
-                  PopupMenuItem(
-                    value: 1,
-                    child: Row(
-                      children: const [
-                        Padding(
-                          padding: EdgeInsets.only(right: 12),
-                          child: Icon(
-                            Icons.delete_outlined,
-                            color: Colors.redAccent,
-                            size: 20,
-                          ),
+                ),
+                PopupMenuItem(
+                  value: 1,
+                  child: Row(
+                    children: const [
+                      Padding(
+                        padding: EdgeInsets.only(right: 12),
+                        child: Icon(
+                          Icons.delete_outlined,
+                          color: Colors.redAccent,
+                          size: 20,
                         ),
-                        Text(
-                          'Apagar',
-                          style: TextStyle(color: Colors.redAccent),
-                        )
-                      ],
-                    ),
+                      ),
+                      Text(
+                        'Apagar',
+                        style: TextStyle(color: Colors.redAccent),
+                      )
+                    ],
                   ),
-                ],
+                ),
+              ],
               child: const SizedBox(
                 width: 48,
                 child: Icon(
@@ -544,13 +544,13 @@ class _ContentViewPageState extends State<ContentViewPage> {
       bottomSheet: ValueListenableBuilder(
         valueListenable: canComment,
         builder: (context, value, child) => Visibility(
-            visible: value,
-            child: SizedBox(
-              height: 50,
-              width: screenWidth,
-              child: boxComment(),
-            ),
+          visible: value,
+          child: SizedBox(
+            height: 50,
+            width: screenWidth,
+            child: boxComment(),
           ),
+        ),
       ),
     );
   }
@@ -562,159 +562,160 @@ class _ContentViewPageState extends State<ContentViewPage> {
   }
 
   Widget boxComment() => GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ContentFormCommentPage(
-              id: widget.contentData.id!,
-              title: widget.contentData.title!,
-            ),
-          ),
-        );
-      },
-      child: Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).cardColor,
-          borderRadius: const BorderRadius.all(
-            Radius.circular(6),
-          ),
-          border: Border.all(
-            color: const Color.fromARGB(30, 158, 158, 158),
-          ),
-        ),
-        child: const Padding(
-          padding: EdgeInsets.only(left: 15, top: 15),
-          child: Text(
-            'Responder',
-            style: TextStyle(
-              color: Colors.grey,
-            ),
-          ),
-        ),
-      ),
-    );
-
-  Widget boxCommentList(data, {isChild = false}) => ListView.builder(
-      physics: const NeverScrollableScrollPhysics(),
-      shrinkWrap: true,
-      itemCount: data.length,
-      itemBuilder: (context, index) {
-        final item = Content.fromJson(data[index]);
-        final hasChildren = item.children!.isNotEmpty;
-
-        return Card(
-          elevation: 0,
-          child: Container(
-            decoration: BoxDecoration(
-              border: Border(
-                left: BorderSide(
-                  color: isChild
-                      ? const Color.fromARGB(100, 158, 158, 158)
-                      : Colors.transparent,
-                ),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ContentFormCommentPage(
+                id: widget.contentData.id!,
+                title: widget.contentData.title!,
               ),
             ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  width: 39,
-                  child: Column(
-                    children: [
-                      IconButton(
-                        tooltip: 'Creditar TabCoin',
-                        onPressed: () async {
-                          await thumbComment(item, 'credit');
-                        },
-                        icon: const Icon(
-                          Icons.keyboard_arrow_up_rounded,
-                        ),
-                      ),
-                      Text(
-                        '${item.tabcoins}',
-                        softWrap: true,
-                      ),
-                      IconButton(
-                        tooltip: 'Debitar TabCoin',
-                        onPressed: () async {
-                          await thumbComment(item, 'debit');
-                        },
-                        icon: const Icon(
-                          Icons.keyboard_arrow_down_rounded,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Padding(
-                        padding: EdgeInsets.only(top: 6),
-                      ),
-                      Row(
-                        children: [
-                          GenerateUserLinkBuilder(
-                              ownerUsername: item.ownerUsername!),
-                          const Text(' • '),
-                          Expanded(
-                            child: Text(
-                              timeago.format(DateTime.parse(item.publishedAt!),
-                                  locale: 'pt_BR'),
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                              softWrap: true,
-                              style: const TextStyle(
-                                fontSize: 11,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      showMarkdownData(item.body!),
-                      const Padding(
-                        padding: EdgeInsets.only(top: 6),
-                      ),
-                      SizedBox(
-                        height: 32,
-                        child: OutlinedButton(
-                          style: OutlinedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ContentFormCommentPage(
-                                  id: item.id!,
-                                  title: item.body!,
-                                ),
-                              ),
-                            );
-                          },
-                          child: const Text('Responder'),
-                        ),
-                      ),
-                      Visibility(
-                        visible: hasChildren,
-                        child: boxCommentList(item.children, isChild: true),
-                      ),
-                      const Padding(
-                        padding: EdgeInsets.only(bottom: 3),
-                      ),
-                    ],
-                  ),
-                )
-              ],
+          );
+        },
+        child: Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
+            borderRadius: const BorderRadius.all(
+              Radius.circular(6),
+            ),
+            border: Border.all(
+              color: const Color.fromARGB(30, 158, 158, 158),
             ),
           ),
-        );
-      },
-    );
+          child: const Padding(
+            padding: EdgeInsets.only(left: 15, top: 15),
+            child: Text(
+              'Responder',
+              style: TextStyle(
+                color: Colors.grey,
+              ),
+            ),
+          ),
+        ),
+      );
+
+  Widget boxCommentList(data, {isChild = false}) => ListView.builder(
+        physics: const NeverScrollableScrollPhysics(),
+        shrinkWrap: true,
+        itemCount: data.length,
+        itemBuilder: (context, index) {
+          final item = Content.fromJson(data[index]);
+          final hasChildren = item.children!.isNotEmpty;
+
+          return Card(
+            elevation: 0,
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border(
+                  left: BorderSide(
+                    color: isChild
+                        ? const Color.fromARGB(100, 158, 158, 158)
+                        : Colors.transparent,
+                  ),
+                ),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    width: 39,
+                    child: Column(
+                      children: [
+                        IconButton(
+                          tooltip: 'Creditar TabCoin',
+                          onPressed: () async {
+                            await thumbComment(item, 'credit');
+                          },
+                          icon: const Icon(
+                            Icons.keyboard_arrow_up_rounded,
+                          ),
+                        ),
+                        Text(
+                          '${item.tabcoins}',
+                          softWrap: true,
+                        ),
+                        IconButton(
+                          tooltip: 'Debitar TabCoin',
+                          onPressed: () async {
+                            await thumbComment(item, 'debit');
+                          },
+                          icon: const Icon(
+                            Icons.keyboard_arrow_down_rounded,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Padding(
+                          padding: EdgeInsets.only(top: 6),
+                        ),
+                        Row(
+                          children: [
+                            GenerateUserLinkBuilder(
+                                ownerUsername: item.ownerUsername!),
+                            const Text(' • '),
+                            Expanded(
+                              child: Text(
+                                timeago.format(
+                                    DateTime.parse(item.publishedAt!),
+                                    locale: 'pt_BR'),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                                softWrap: true,
+                                style: const TextStyle(
+                                  fontSize: 11,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        showMarkdownData(item.body!),
+                        const Padding(
+                          padding: EdgeInsets.only(top: 6),
+                        ),
+                        SizedBox(
+                          height: 32,
+                          child: OutlinedButton(
+                            style: OutlinedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ContentFormCommentPage(
+                                    id: item.id!,
+                                    title: item.body!,
+                                  ),
+                                ),
+                              );
+                            },
+                            child: const Text('Responder'),
+                          ),
+                        ),
+                        Visibility(
+                          visible: hasChildren,
+                          child: boxCommentList(item.children, isChild: true),
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.only(bottom: 3),
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            ),
+          );
+        },
+      );
 
   void share(Content data) {
     final user = data.ownerUsername;
@@ -725,20 +726,20 @@ class _ContentViewPageState extends State<ContentViewPage> {
   }
 
   Widget showMarkdownData(body) => MarkdownBody(
-      data: body,
-      selectable: true,
-      onTapLink: (text, href, title) {
-        _launchUrl(Uri.parse(href!));
-      },
-      blockSyntaxes: [
-        ...md.ExtensionSet.gitHubWeb.blockSyntaxes,
-        ...md.ExtensionSet.gitHubFlavored.blockSyntaxes
-      ],
-      inlineSyntaxes: [
-        ...md.ExtensionSet.gitHubWeb.inlineSyntaxes,
-        ...md.ExtensionSet.gitHubFlavored.inlineSyntaxes
-      ],
-      imageBuilder: (uri, title, alt) => GestureDetector(
+        data: body,
+        selectable: true,
+        onTapLink: (text, href, title) {
+          _launchUrl(Uri.parse(href!));
+        },
+        blockSyntaxes: [
+          ...md.ExtensionSet.gitHubWeb.blockSyntaxes,
+          ...md.ExtensionSet.gitHubFlavored.blockSyntaxes
+        ],
+        inlineSyntaxes: [
+          ...md.ExtensionSet.gitHubWeb.inlineSyntaxes,
+          ...md.ExtensionSet.gitHubFlavored.inlineSyntaxes
+        ],
+        imageBuilder: (uri, title, alt) => GestureDetector(
           onTap: () {
             Navigator.push(
               context,
@@ -767,23 +768,23 @@ class _ContentViewPageState extends State<ContentViewPage> {
               //return const LoadingContentImageHelper(size: 40);
             },
             errorBuilder: (context, error, stackTrace) => Container(
-                color: Colors.white,
-                child: Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: Column(
-                    children: [
-                      Image.asset('assets/images/error.png', width: 60),
-                      const Text(
-                        'Não foi possível carregar esta imagem!',
-                        style: TextStyle(fontSize: 12),
-                      ),
-                    ],
-                  ),
+              color: Colors.white,
+              child: Padding(
+                padding: const EdgeInsets.all(8),
+                child: Column(
+                  children: [
+                    Image.asset('assets/images/error.png', width: 60),
+                    const Text(
+                      'Não foi possível carregar esta imagem!',
+                      style: TextStyle(fontSize: 12),
+                    ),
+                  ],
                 ),
               ),
+            ),
           ),
         ),
-    );
+      );
 
   Future<void> thumbPost(String transactionType) async {
     try {

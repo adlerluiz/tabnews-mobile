@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:tabnews/page/home.dart';
+import 'package:tabnews/page/home_page.dart';
 import 'package:tabnews/service/global_current_theme.dart';
 
 void main() {
