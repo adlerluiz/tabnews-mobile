@@ -74,12 +74,12 @@ class _HomePageState extends State<HomePage>
     WidgetsBinding.instance.removeObserver(this);
   }
 
-  Future<void> _fetchFavoritePage(pageKey) async {
+  Future<void> _fetchFavoritePage(int pageKey) async {
     try {
       var contentList =
           await storage.sharedPreferencesGet('favorite_list', '[]');
 
-      contentList = jsonDecode(contentList);
+      contentList = jsonDecode(contentList).reversed.toList();
 
       final isLastPage = contentList.length != pageSize;
 
@@ -96,8 +96,8 @@ class _HomePageState extends State<HomePage>
 
   Future<void> _fetchRelevantPage(pageKey) async {
     try {
-      final contentList = await apiContent.getList(
-          pagina: pageKey, estrategia: 'relevant');
+      final contentList =
+          await apiContent.getList(pagina: pageKey, estrategia: 'relevant');
 
       final isLastPage = contentList.length != pageSize;
 
@@ -114,8 +114,7 @@ class _HomePageState extends State<HomePage>
 
   Future<void> _fetchRecentPage(pageKey) async {
     try {
-      final contentList =
-          await apiContent.getList(pagina: pageKey);
+      final contentList = await apiContent.getList(pagina: pageKey);
 
       final isLastPage = contentList.length != pageSize;
 
@@ -139,35 +138,34 @@ class _HomePageState extends State<HomePage>
 
   @override
   Widget build(BuildContext context) => Scaffold(
-      appBar: AppBar(
-        title: Text(widget.appName),
-        actions: [
-          IconButton(
-            tooltip: 'Perfil',
-            icon: const Icon(Icons.person),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const ProfileHomePage(),
-                ),
-              );
-            },
-          )
-        ],
-      ),
-      body: TabBarView(
-        controller: _navigationTabController,
-        children: [
-          RefreshIndicator(
-            onRefresh: () => Future.sync(
-              _favoritePagingController.refresh,
-            ),
-            child: PagedListView(
-              pagingController: _favoritePagingController,
-              reverse: true,
-              builderDelegate: PagedChildBuilderDelegate<dynamic>(
-                noItemsFoundIndicatorBuilder: (context) => Column(
+        appBar: AppBar(
+          title: Text(widget.appName),
+          actions: [
+            IconButton(
+              tooltip: 'Perfil',
+              icon: const Icon(Icons.person),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ProfileHomePage(),
+                  ),
+                );
+              },
+            )
+          ],
+        ),
+        body: TabBarView(
+          controller: _navigationTabController,
+          children: [
+            RefreshIndicator(
+              onRefresh: () => Future.sync(
+                _favoritePagingController.refresh,
+              ),
+              child: PagedListView(
+                pagingController: _favoritePagingController,
+                builderDelegate: PagedChildBuilderDelegate<dynamic>(
+                  noItemsFoundIndicatorBuilder: (context) => Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: const [
                       Text(
@@ -182,100 +180,103 @@ class _HomePageState extends State<HomePage>
                       )
                     ],
                   ),
-                firstPageProgressIndicatorBuilder: (context) => const LoadingContentImageBuilder(),
-                itemBuilder: (context, data, index) {
-                  final Content item = Content.fromJson(data);
-
-                  return GenerateContentBuilder(
-                    contentData: item,
-                    index: index,
-                    showTabcoins: false,
-                    showComments: false,
-                  );
-                },
-              ),
-            ),
-          ),
-          RefreshIndicator(
-            onRefresh: () => Future.sync(
-              _relevantPagingController.refresh,
-            ),
-            child: Center(
-              child: PagedListView(
-                pagingController: _relevantPagingController,
-                builderDelegate: PagedChildBuilderDelegate<dynamic>(
-                  firstPageProgressIndicatorBuilder: (context) => const LoadingContentImageBuilder(),
+                  firstPageProgressIndicatorBuilder: (context) =>
+                      const LoadingContentImageBuilder(),
                   itemBuilder: (context, data, index) {
                     final Content item = Content.fromJson(data);
 
                     return GenerateContentBuilder(
                       contentData: item,
                       index: index,
+                      showTabcoins: false,
+                      showComments: false,
                     );
                   },
                 ),
               ),
             ),
-          ),
-          RefreshIndicator(
-            child: Center(
-              child: PagedListView(
-                pagingController: _recentPagingController,
-                builderDelegate: PagedChildBuilderDelegate<dynamic>(
-                  firstPageProgressIndicatorBuilder: (context) => const LoadingContentImageBuilder(),
-                  itemBuilder: (context, item, index) {
-                    item = Content.fromJson(item);
+            RefreshIndicator(
+              onRefresh: () => Future.sync(
+                _relevantPagingController.refresh,
+              ),
+              child: Center(
+                child: PagedListView(
+                  pagingController: _relevantPagingController,
+                  builderDelegate: PagedChildBuilderDelegate<dynamic>(
+                    firstPageProgressIndicatorBuilder: (context) =>
+                        const LoadingContentImageBuilder(),
+                    itemBuilder: (context, data, index) {
+                      final Content item = Content.fromJson(data);
 
-                    return GenerateContentBuilder(
-                      contentData: item,
-                      index: index,
-                    );
-                  },
+                      return GenerateContentBuilder(
+                        contentData: item,
+                        index: index,
+                      );
+                    },
+                  ),
                 ),
               ),
             ),
-            onRefresh: () => Future.sync(
-              _recentPagingController.refresh,
+            RefreshIndicator(
+              child: Center(
+                child: PagedListView(
+                  pagingController: _recentPagingController,
+                  builderDelegate: PagedChildBuilderDelegate<dynamic>(
+                    firstPageProgressIndicatorBuilder: (context) =>
+                        const LoadingContentImageBuilder(),
+                    itemBuilder: (context, item, index) {
+                      item = Content.fromJson(item);
+
+                      return GenerateContentBuilder(
+                        contentData: item,
+                        index: index,
+                      );
+                    },
+                  ),
+                ),
+              ),
+              onRefresh: () => Future.sync(
+                _recentPagingController.refresh,
+              ),
             ),
-          ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        tooltip: 'Publicar novo conteúdo',
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const ContentFormPage(),
+          ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          tooltip: 'Publicar novo conteúdo',
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const ContentFormPage(),
+              ),
+            );
+          },
+          child: const Icon(Icons.post_add_outlined),
+        ),
+        bottomNavigationBar: NavigationBar(
+          height: 62,
+          onDestinationSelected: selectTab,
+          selectedIndex: _navigationTabPageIndex,
+          destinations: [
+            NavigationDestination(
+              icon: (_navigationTabPageIndex == 0)
+                  ? const Icon(Icons.star)
+                  : const Icon(Icons.star_border),
+              label: 'Favoritos',
             ),
-          );
-        },
-        child: const Icon(Icons.post_add_outlined),
-      ),
-      bottomNavigationBar: NavigationBar(
-        height: 62,
-        onDestinationSelected: selectTab,
-        selectedIndex: _navigationTabPageIndex,
-        destinations: [
-          NavigationDestination(
-            icon: (_navigationTabPageIndex == 0)
-                ? const Icon(Icons.star)
-                : const Icon(Icons.star_border),
-            label: 'Favoritos',
-          ),
-          NavigationDestination(
-            icon: (_navigationTabPageIndex == 1)
-                ? const Icon(Icons.radar)
-                : const Icon(Icons.radar_outlined),
-            label: 'Relevantes',
-          ),
-          NavigationDestination(
-            icon: (_navigationTabPageIndex == 2)
-                ? const Icon(Icons.timelapse)
-                : const Icon(Icons.timelapse_outlined),
-            label: 'Recentes',
-          ),
-        ],
-      ),
-    );
+            NavigationDestination(
+              icon: (_navigationTabPageIndex == 1)
+                  ? const Icon(Icons.radar)
+                  : const Icon(Icons.radar_outlined),
+              label: 'Relevantes',
+            ),
+            NavigationDestination(
+              icon: (_navigationTabPageIndex == 2)
+                  ? const Icon(Icons.timelapse)
+                  : const Icon(Icons.timelapse_outlined),
+              label: 'Recentes',
+            ),
+          ],
+        ),
+      );
 }
