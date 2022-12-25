@@ -7,10 +7,18 @@ import 'package:tabnews/service/messenger.dart';
 
 class ContentFormCommentPage extends StatefulWidget {
   const ContentFormCommentPage(
-      {super.key, required this.id, required this.title});
+      {super.key,
+      required this.id,
+      required this.title,
+      this.body = '',
+      this.slug = '',
+      this.isEdit = false});
 
   final String id;
   final String title;
+  final String body;
+  final String slug;
+  final bool isEdit;
 
   @override
   State<ContentFormCommentPage> createState() => _ContentFormCommentPageState();
@@ -32,6 +40,12 @@ class _ContentFormCommentPageState extends State<ContentFormCommentPage> {
   @override
   void initState() {
     super.initState();
+
+    if (widget.body.isNotEmpty) {
+      setState(() {
+        comment = widget.body;
+      });
+    }
   }
 
   @override
@@ -42,9 +56,14 @@ class _ContentFormCommentPageState extends State<ContentFormCommentPage> {
 
   Future<void> save() async {
     try {
-      await apiContent.postComment(mkdTextController.value.text, widget.id);
+      if (widget.isEdit) {
+        await apiContent.patchComment(
+            'tryAgain', widget.slug, mkdTextController.value.text, widget.id);
+      } else {
+        await apiContent.postComment(mkdTextController.value.text, widget.id);
+      }
 
-      messengerService.show(context, text: 'Resposta publicadoa!');
+      messengerService.show(context, text: 'Resposta publicada!');
       Navigator.of(context).pop();
     } catch (e) {
       setState(() {
@@ -66,9 +85,13 @@ class _ContentFormCommentPageState extends State<ContentFormCommentPage> {
               Navigator.pop(context);
             },
           ),
-          title: const Text(
+          /*title: const Text(
             'Responder',
             style: TextStyle(fontSize: 18),
+          ),*/
+          title: Text(
+            widget.isEdit ? 'Editar resposta' : 'Responder',
+            style: const TextStyle(fontSize: 18),
           ),
           actions: [
             Visibility(

@@ -43,7 +43,6 @@ class _ContentFormPageState extends State<ContentFormPage> {
 
     if (widget.ownerUsername.isNotEmpty) {
       isEdit = true;
-
       getEditData();
     }
   }
@@ -65,172 +64,172 @@ class _ContentFormPageState extends State<ContentFormPage> {
       mkdTextController.text = data.body!;
       sourceTextController.text = data.sourceUrl!;
     } catch (e) {
-      print(e);
+      //print(e);
     }
   }
 
   @override
   Widget build(BuildContext context) => Scaffold(
-      appBar: AppBar(
-        titleSpacing: 0,
-        elevation: 1,
-        leading: IconButton(
-          icon: const Icon(Icons.close),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        title: Text(
-          '${isEdit ? 'Editar' : 'Publicar novo'} conteúdo',
-          style: const TextStyle(fontSize: 18),
-        ),
-        actions: [
-          Visibility(
-            visible: !showPreviewText,
-            child: IconButton(
-              tooltip: 'Visualizar',
-              icon: const Icon(Icons.remove_red_eye_outlined),
-              onPressed: () {
-                setState(() {
-                  showPreviewText = !showPreviewText;
-                });
-              },
-            ),
-          ),
-          Visibility(
-            visible: showPreviewText,
-            child: IconButton(
-              tooltip: 'Editar',
-              icon: const Icon(Icons.edit_outlined),
-              onPressed: () {
-                setState(() {
-                  showPreviewText = !showPreviewText;
-                });
-              },
-            ),
-          ),
-          TextButton(
-            child: isSaving
-                ? const SizedBox(
-                    width: 25,
-                    height: 25,
-                    child: CircularProgressIndicator(),
-                  )
-                : const Text('Postar'),
+        appBar: AppBar(
+          titleSpacing: 0,
+          elevation: 1,
+          leading: IconButton(
+            icon: const Icon(Icons.close),
             onPressed: () {
-              if (!isSaving) {
-                save();
-
-                setState(() {
-                  isSaving = true;
-                });
-              }
+              Navigator.pop(context);
             },
-          )
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
+          ),
+          title: Text(
+            '${isEdit ? 'Editar' : 'Publicar novo'} conteúdo',
+            style: const TextStyle(fontSize: 18),
+          ),
+          actions: [
             Visibility(
               visible: !showPreviewText,
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    TextField(
-                      focusNode: titleFocusNode,
-                      textCapitalization: TextCapitalization.words,
-                      textInputAction: TextInputAction.done,
-                      controller: titleTextController,
-                      decoration: const InputDecoration(
-                        contentPadding:
-                            EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide.none,
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(6),
-                          ),
-                        ),
-                        //filled: true,
-                        hintText: 'Título',
-                        hintStyle: TextStyle(
-                          fontSize: 15,
-                        ),
-                      ),
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.only(bottom: 14),
-                    ),
-                    MarkdownTextInput(
-                      (String value) {
-                        comment = value;
-                      },
-                      comment,
-                      label: 'Seu comentário',
-                      actions: MarkdownType.values,
-                      controller: mkdTextController,
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.only(bottom: 14),
-                    ),
-                    TextField(
-                      textCapitalization: TextCapitalization.words,
-                      controller: sourceTextController,
-                      decoration: const InputDecoration(
-                        contentPadding: EdgeInsets.symmetric(
-                          vertical: 16,
-                          horizontal: 12,
-                        ),
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide.none,
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(6),
-                          ),
-                        ),
-                        //filled: true,
-                        hintText: 'Fonte (opcional)',
-                        helperText: 'Formato https://www.site.com',
-                        hintStyle: TextStyle(
-                          fontSize: 15,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+              child: IconButton(
+                tooltip: 'Visualizar',
+                icon: const Icon(Icons.remove_red_eye_outlined),
+                onPressed: () {
+                  setState(() {
+                    showPreviewText = !showPreviewText;
+                  });
+                },
               ),
             ),
             Visibility(
               visible: showPreviewText,
-              child: SingleChildScrollView(
+              child: IconButton(
+                tooltip: 'Editar',
+                icon: const Icon(Icons.edit_outlined),
+                onPressed: () {
+                  setState(() {
+                    showPreviewText = !showPreviewText;
+                  });
+                },
+              ),
+            ),
+            TextButton(
+              child: isSaving
+                  ? const SizedBox(
+                      width: 25,
+                      height: 25,
+                      child: CircularProgressIndicator(),
+                    )
+                  : const Text('Postar'),
+              onPressed: () {
+                if (!isSaving) {
+                  save();
+
+                  setState(() {
+                    isSaving = true;
+                  });
+                }
+              },
+            )
+          ],
+        ),
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              Visibility(
+                visible: !showPreviewText,
                 child: Padding(
                   padding:
                       const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        titleTextController.value.text,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15,
+                      TextField(
+                        focusNode: titleFocusNode,
+                        textCapitalization: TextCapitalization.words,
+                        textInputAction: TextInputAction.done,
+                        controller: titleTextController,
+                        decoration: const InputDecoration(
+                          contentPadding: EdgeInsets.symmetric(
+                              vertical: 16, horizontal: 12),
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(6),
+                            ),
+                          ),
+                          //filled: true,
+                          hintText: 'Título',
+                          hintStyle: TextStyle(
+                            fontSize: 15,
+                          ),
                         ),
                       ),
                       const Padding(
-                        padding: EdgeInsets.only(bottom: 10),
+                        padding: EdgeInsets.only(bottom: 14),
                       ),
-                      MarkdownBody(data: comment)
+                      MarkdownTextInput(
+                        (String value) {
+                          comment = value;
+                        },
+                        comment,
+                        label: 'Seu comentário',
+                        actions: MarkdownType.values,
+                        controller: mkdTextController,
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.only(bottom: 14),
+                      ),
+                      TextField(
+                        textCapitalization: TextCapitalization.words,
+                        controller: sourceTextController,
+                        decoration: const InputDecoration(
+                          contentPadding: EdgeInsets.symmetric(
+                            vertical: 16,
+                            horizontal: 12,
+                          ),
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(6),
+                            ),
+                          ),
+                          //filled: true,
+                          hintText: 'Fonte (opcional)',
+                          helperText: 'Formato https://www.site.com',
+                          hintStyle: TextStyle(
+                            fontSize: 15,
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
               ),
-            ),
-          ],
+              Visibility(
+                visible: showPreviewText,
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          titleTextController.value.text,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                          ),
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.only(bottom: 10),
+                        ),
+                        MarkdownBody(data: comment)
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
-    );
+      );
 
   Future<void> save() async {
     try {

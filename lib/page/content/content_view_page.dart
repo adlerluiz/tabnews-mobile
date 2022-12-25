@@ -39,7 +39,7 @@ class _ContentViewPageState extends State<ContentViewPage> {
 
   int indexFavorite = -1;
 
-  List dataList = [];
+  List<dynamic> dataList = [];
 
   late bool showResponseButton = true;
 
@@ -85,7 +85,7 @@ class _ContentViewPageState extends State<ContentViewPage> {
     }
   }
 
-  getFavoriteList() async {
+  Future<void> getFavoriteList() async {
     final result = await storage.sharedPreferencesGet('favorite_list', '[]');
 
     setState(() {
@@ -151,25 +151,43 @@ class _ContentViewPageState extends State<ContentViewPage> {
   }
 
   Future<dynamic> getCommentList() async {
-    final List commentListData = await apiContent.getComments(
+    final List<dynamic> commentListData = await apiContent.getComments(
         widget.contentData.ownerUsername!, widget.contentData.slug!);
     return commentListData;
   }
 
-  void selectMenuItem(value) {
+  void selectMenuItem(int value) {
     switch (value) {
       case 0:
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ContentFormPage(
-              ownerUsername: widget.contentData.ownerUsername!,
-              slug: widget.contentData.slug!,
+        //print(widget.contentData.toJson());
+        if (widget.contentData.title == null) {
+          Navigator.push(
+            context,
+            MaterialPageRoute<dynamic>(
+              builder: (context) => ContentFormCommentPage(
+                id: widget.contentData.parentId!,
+                title: '',
+                body: widget.contentData.body!,
+                slug: widget.contentData.slug!,
+                isEdit: true,
+              ),
             ),
-          ),
-        ).then((params) {
-          setState(() {});
-        });
+          ).then((params) {
+            setState(() {});
+          });
+        } else {
+          Navigator.push(
+            context,
+            MaterialPageRoute<dynamic>(
+              builder: (context) => ContentFormPage(
+                ownerUsername: widget.contentData.ownerUsername!,
+                slug: widget.contentData.slug!,
+              ),
+            ),
+          ).then((params) {
+            setState(() {});
+          });
+        }
         break;
 
       case 1:
@@ -206,415 +224,374 @@ class _ContentViewPageState extends State<ContentViewPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-
-    return Scaffold(
-      appBar: AppBar(
-        titleSpacing: 0,
-        title: ValueListenableBuilder(
-          valueListenable: hasScrolled,
-          builder: (context, value, child) => AnimatedOpacity(
-            duration: const Duration(milliseconds: 300),
-            opacity: value ? 1 : 0,
-            child: Text(
-              '${widget.contentData.title ?? widget.contentData.body}',
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ),
-        actions: [
-          IconButton(
-            tooltip: 'Favorito',
-            onPressed: () {
-              if (indexFavorite != -1) {
-                removeFromFavorite(indexFavorite);
-              } else {
-                addToFavorite(widget.contentData);
-              }
-            },
-            icon: (indexFavorite != -1)
-                ? const Icon(
-                    Icons.star_outlined,
-                    color: Colors.amber,
-                  )
-                : const Icon(
-                    Icons.star_border_outlined,
-                  ),
-          ),
-          Visibility(
-            visible: canEdit,
-            child: PopupMenuButton(
-              elevation: 3.2,
-              onSelected: selectMenuItem,
-              tooltip: 'Opções',
-              itemBuilder: (BuildContext context) => [
-                PopupMenuItem(
-                  value: 0,
-                  child: Row(
-                    children: const [
-                      Padding(
-                        padding: EdgeInsets.only(right: 12),
-                        child: Icon(
-                          Icons.edit_outlined,
-                          size: 19,
-                        ),
-                      ),
-                      Text('Editar')
-                    ],
-                  ),
-                ),
-                PopupMenuItem(
-                  value: 1,
-                  child: Row(
-                    children: const [
-                      Padding(
-                        padding: EdgeInsets.only(right: 12),
-                        child: Icon(
-                          Icons.delete_outlined,
-                          color: Colors.redAccent,
-                          size: 20,
-                        ),
-                      ),
-                      Text(
-                        'Apagar',
-                        style: TextStyle(color: Colors.redAccent),
-                      )
-                    ],
-                  ),
-                ),
-              ],
-              child: const SizedBox(
-                width: 48,
-                child: Icon(
-                  Icons.more_vert_outlined,
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(
+          titleSpacing: 0,
+          title: ValueListenableBuilder(
+            valueListenable: hasScrolled,
+            builder: (context, value, child) => AnimatedOpacity(
+              duration: const Duration(milliseconds: 300),
+              opacity: value ? 1 : 0,
+              child: Text(
+                '${widget.contentData.title ?? widget.contentData.body}',
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),
           ),
-        ],
-      ),
-      body: FutureBuilder(
-        future: getData(),
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    widget.contentData.title!,
-                    textAlign: TextAlign.center,
+          actions: [
+            IconButton(
+              tooltip: 'Favorito',
+              onPressed: () {
+                if (indexFavorite != -1) {
+                  removeFromFavorite(indexFavorite);
+                } else {
+                  addToFavorite(widget.contentData);
+                }
+              },
+              icon: (indexFavorite != -1)
+                  ? const Icon(
+                      Icons.star_outlined,
+                      color: Colors.amber,
+                    )
+                  : const Icon(
+                      Icons.star_border_outlined,
+                    ),
+            ),
+            Visibility(
+              visible: canEdit,
+              child: PopupMenuButton(
+                elevation: 3.2,
+                onSelected: selectMenuItem,
+                tooltip: 'Opções',
+                itemBuilder: (BuildContext context) => [
+                  PopupMenuItem(
+                    value: 0,
+                    child: Row(
+                      children: const [
+                        Padding(
+                          padding: EdgeInsets.only(right: 12),
+                          child: Icon(
+                            Icons.edit_outlined,
+                            size: 19,
+                          ),
+                        ),
+                        Text('Editar')
+                      ],
+                    ),
                   ),
-                  const Padding(
-                    padding: EdgeInsets.only(bottom: 10),
-                  ),
-                  Image.asset(
-                    'assets/images/error.png',
-                    color: (Theme.of(context).brightness == Brightness.light)
-                        ? Colors.black
-                        : Colors.white,
-                    width: 80,
-                  ),
-                  Text(
-                    snapshot.error.toString(),
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
+                  PopupMenuItem(
+                    value: 1,
+                    child: Row(
+                      children: const [
+                        Padding(
+                          padding: EdgeInsets.only(right: 12),
+                          child: Icon(
+                            Icons.delete_outlined,
+                            color: Colors.redAccent,
+                            size: 20,
+                          ),
+                        ),
+                        Text(
+                          'Apagar',
+                          style: TextStyle(color: Colors.redAccent),
+                        )
+                      ],
                     ),
                   ),
                 ],
+                child: const SizedBox(
+                  width: 48,
+                  child: Icon(
+                    Icons.more_vert_outlined,
+                  ),
+                ),
               ),
-            );
-          }
-          if (snapshot.hasData) {
-            final Content data = Content.fromJson(snapshot.data);
-            bool isComment = false;
-            if (data.parentId != null) isComment = true;
-
-            return Scrollbar(
-              child: SingleChildScrollView(
-                controller: pageScrollController,
-                padding: const EdgeInsets.symmetric(horizontal: 12),
+            ),
+          ],
+        ),
+        body: FutureBuilder(
+          future: getData(),
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return Center(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Padding(
-                      padding: EdgeInsets.only(top: 3),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(),
-                      child: Row(
-                        children: [
-                          GenerateUserLinkBuilder(
-                              ownerUsername: widget.contentData.ownerUsername!),
-                          const Text(' • '),
-                          Text(
-                            timeago.format(
-                                DateTime.parse(widget.contentData.publishedAt!),
-                                locale: 'pt_BR'),
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                            softWrap: true,
-                            style: const TextStyle(
-                              fontSize: 11,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 18),
-                      child: Container(
-                        decoration: const BoxDecoration(
-                          border: Border(
-                            left: BorderSide(color: Colors.grey),
-                          ),
-                        ),
-                        padding: const EdgeInsets.only(left: 4),
-                        child: isComment
-                            ? MarkdownBody(
-                                data: '💬 ${data.body}',
-                                onTapLink: (text, href, title) {
-                                  _launchUrl(Uri.parse(href!));
-                                },
-                              )
-                            : Text(
-                                '${data.title}',
-                                style: TextStyle(
-                                  fontSize: 17,
-                                  fontWeight: isComment
-                                      ? FontWeight.normal
-                                      : FontWeight.w500,
-                                ),
-                              ),
-                      ),
-                    ),
-                    Visibility(
-                      visible: !isComment,
-                      child: showMarkdownData(data.body!),
+                    Text(
+                      widget.contentData.title!,
+                      textAlign: TextAlign.center,
                     ),
                     const Padding(
-                      padding: EdgeInsets.only(top: 12),
+                      padding: EdgeInsets.only(bottom: 10),
                     ),
-                    Visibility(
-                      visible: data.sourceUrl != null,
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Padding(
-                            padding: EdgeInsets.only(right: 5),
-                            child: Icon(
-                              Icons.link_rounded,
-                              size: 18,
-                            ),
-                          ),
-                          const Text(
-                            'Fonte:',
-                          ),
-                          Expanded(
-                            child: GestureDetector(
-                              onTap: () {
-                                _launchUrl(Uri.parse(data.sourceUrl!));
-                              },
-                              child: Text(
-                                ' ${data.sourceUrl}',
-                                style: const TextStyle(
-                                  color: Colors.blue,
-                                ),
-                                softWrap: true,
-                              ),
-                            ),
-                          )
-                        ],
+                    Image.asset(
+                      'assets/images/error.png',
+                      color: (Theme.of(context).brightness == Brightness.light)
+                          ? Colors.black
+                          : Colors.white,
+                      width: 80,
+                    ),
+                    Text(
+                      snapshot.error.toString(),
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
                       ),
-                    ),
-                    /*const Padding(
-                      padding: EdgeInsets.only(top: 2),
-                    ),*/
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            IconButton(
-                              tooltip: 'Creditar TabCoin',
-                              onPressed: () async {
-                                await thumbPost('credit');
-                              },
-                              icon: const Icon(Icons.keyboard_arrow_up_rounded),
-                            ),
-                            Text(
-                              '${data.tabcoins}',
-                            ),
-                            IconButton(
-                              tooltip: 'Debitar TabCoin',
-                              onPressed: () async {
-                                await thumbPost('debit');
-                              },
-                              icon:
-                                  const Icon(Icons.keyboard_arrow_down_rounded),
-                            ),
-                          ],
-                        ),
-                        TextButton.icon(
-                          style: ButtonStyle(
-                            textStyle: const MaterialStatePropertyAll(
-                              TextStyle(fontSize: 13),
-                            ),
-                            foregroundColor: MaterialStateProperty.all(
-                              (Theme.of(context).brightness == Brightness.light)
-                                  ? Colors.black
-                                  : Colors.white70,
-                            ),
-                          ),
-                          onPressed: () {},
-                          icon: const Icon(
-                            Icons.mode_comment_outlined,
-                            size: 18,
-                          ),
-                          label: Text(
-                            '${data.childrenDeepCount}',
-                          ),
-                        ),
-                        const Padding(
-                          padding: EdgeInsets.zero,
-                        ),
-                        IconButton(
-                          style: const ButtonStyle(
-                            textStyle: MaterialStatePropertyAll(
-                              TextStyle(fontSize: 13),
-                            ),
-                          ),
-                          onPressed: () {
-                            share(widget.contentData);
-                          },
-                          icon: const Icon(
-                            Icons.share,
-                            size: 18,
-                          ),
-                        ),
-                      ],
-                    ),
-                    /*Visibility(
-                      visible: widget.contentData.childrenDeepCount! > 0,
-                      child: const Divider(height: 1),
-                    ),*/
-                    SizedBox(
-                      width: double.infinity,
-                      height: 42,
-                      child: OutlinedButton(
-                        style: OutlinedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute<dynamic>(
-                              builder: (context) => ContentFormCommentPage(
-                                id: widget.contentData.id!,
-                                title: widget.contentData.title ??
-                                    widget.contentData.body!,
-                              ),
-                            ),
-                          );
-                        },
-                        child: const Text('Responder'),
-                      ),
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.only(bottom: 5),
-                    ),
-                    Container(
-                      //key: commentsKey,
-                      key: ValueKey(widget.contentData.id),
-                      //color: Colors.white,
-                      child: FutureBuilder(
-                        future: getCommentList(),
-                        builder: (context, snapshot) {
-                          if (snapshot.hasData) {
-                            final data = snapshot.data;
-
-                            if (data.length != 0) {
-                              return boxCommentList(data);
-                            }
-
-                            return Container();
-                          }
-                          return const LoadingContentImageBuilder(size: 30);
-                        },
-                      ),
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.only(bottom: 5),
                     ),
                   ],
                 ),
-              ),
-            );
-          }
-          return const LoadingContentImageBuilder();
-        },
-      ),
-      /*bottomSheet: ValueListenableBuilder(
-        valueListenable: canComment,
-        builder: (context, value, child) => Visibility(
-          visible: value,
-          child: SizedBox(
-            height: 50,
-            width: screenWidth,
-            child: boxComment(),
-          ),
-        ),
-      ),*/
-    );
-  }
+              );
+            }
+            if (snapshot.hasData) {
+              final Content data = Content.fromJson(snapshot.data);
+              bool isComment = false;
+              if (data.parentId != null) {
+                isComment = true;
+              }
+              return Scrollbar(
+                child: SingleChildScrollView(
+                  controller: pageScrollController,
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.only(top: 3),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.zero,
+                        child: Row(
+                          children: [
+                            GenerateUserLinkBuilder(
+                                ownerUsername:
+                                    widget.contentData.ownerUsername!),
+                            const Text(' • '),
+                            Text(
+                              timeago.format(
+                                  DateTime.parse(
+                                      widget.contentData.publishedAt!),
+                                  locale: 'pt_BR'),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                              softWrap: true,
+                              style: const TextStyle(
+                                fontSize: 11,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 18),
+                        child: Container(
+                          decoration: const BoxDecoration(
+                            border: Border(
+                              left: BorderSide(color: Colors.grey),
+                            ),
+                          ),
+                          padding: const EdgeInsets.only(left: 4),
+                          child: isComment
+                              ? MarkdownBody(
+                                  data: '💬 ${data.body}',
+                                  onTapLink: (text, href, title) {
+                                    _launchUrl(Uri.parse(href!));
+                                  },
+                                )
+                              : Text(
+                                  '${data.title}',
+                                  style: TextStyle(
+                                    fontSize: 17,
+                                    fontWeight: isComment
+                                        ? FontWeight.normal
+                                        : FontWeight.w500,
+                                  ),
+                                ),
+                        ),
+                      ),
+                      Visibility(
+                        visible: !isComment,
+                        child: showMarkdownData(data.body!),
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.only(top: 12),
+                      ),
+                      Visibility(
+                        visible: data.sourceUrl != null,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Padding(
+                              padding: EdgeInsets.only(right: 5),
+                              child: Icon(
+                                Icons.link_rounded,
+                                size: 18,
+                              ),
+                            ),
+                            const Text(
+                              'Fonte:',
+                            ),
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () {
+                                  _launchUrl(Uri.parse(data.sourceUrl!));
+                                },
+                                child: Text(
+                                  ' ${data.sourceUrl}',
+                                  style: const TextStyle(
+                                    color: Colors.blue,
+                                  ),
+                                  softWrap: true,
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                      /*const Padding(
+                      padding: EdgeInsets.only(top: 2),
+                    ),*/
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              IconButton(
+                                tooltip: 'Creditar TabCoin',
+                                onPressed: () async {
+                                  await thumbPost('credit');
+                                },
+                                icon:
+                                    const Icon(Icons.keyboard_arrow_up_rounded),
+                              ),
+                              Text(
+                                '${data.tabcoins}',
+                              ),
+                              IconButton(
+                                tooltip: 'Debitar TabCoin',
+                                onPressed: () async {
+                                  await thumbPost('debit');
+                                },
+                                icon: const Icon(
+                                    Icons.keyboard_arrow_down_rounded),
+                              ),
+                            ],
+                          ),
+                          TextButton.icon(
+                            style: ButtonStyle(
+                              textStyle: const MaterialStatePropertyAll(
+                                TextStyle(fontSize: 13),
+                              ),
+                              foregroundColor: MaterialStateProperty.all(
+                                (Theme.of(context).brightness ==
+                                        Brightness.light)
+                                    ? Colors.black
+                                    : Colors.white70,
+                              ),
+                            ),
+                            onPressed: () {},
+                            icon: const Icon(
+                              Icons.mode_comment_outlined,
+                              size: 18,
+                            ),
+                            label: Text(
+                              '${data.childrenDeepCount}',
+                            ),
+                          ),
+                          const Padding(
+                            padding: EdgeInsets.zero,
+                          ),
+                          IconButton(
+                            style: const ButtonStyle(
+                              textStyle: MaterialStatePropertyAll(
+                                TextStyle(fontSize: 13),
+                              ),
+                            ),
+                            onPressed: () {
+                              share(widget.contentData);
+                            },
+                            icon: const Icon(
+                              Icons.share,
+                              size: 18,
+                            ),
+                          ),
+                        ],
+                      ),
+                      /*Visibility(
+                      visible: widget.contentData.childrenDeepCount! > 0,
+                      child: const Divider(height: 1),
+                    ),*/
+                      SizedBox(
+                        width: double.infinity,
+                        height: 42,
+                        child: OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute<dynamic>(
+                                builder: (context) => ContentFormCommentPage(
+                                  id: widget.contentData.id!,
+                                  title: widget.contentData.title ??
+                                      widget.contentData.body!,
+                                ),
+                              ),
+                            );
+                          },
+                          child: const Text('Responder'),
+                        ),
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.only(bottom: 5),
+                      ),
+                      Container(
+                        //key: commentsKey,
+                        key: ValueKey(widget.contentData.id),
+                        //color: Colors.white,
+                        child: FutureBuilder(
+                          future: getCommentList(),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              final List<dynamic> data = snapshot.data;
 
-  Future<void> _launchUrl(Uri url) async {
-    if (!await launchUrl(url, mode: launchUrlMode)) {
-      throw 'Erro ao abrir $url';
-    }
-  }
+                              //if (data.length != 0) {
+                              if (data.isNotEmpty) {
+                                return boxCommentList(data);
+                              }
 
-  Widget boxComment() => GestureDetector(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ContentFormCommentPage(
-                id: widget.contentData.id!,
-                title: widget.contentData.title!,
-              ),
-            ),
-          );
-        },
-        child: Container(
-          decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
-            borderRadius: const BorderRadius.all(
-              Radius.circular(6),
-            ),
-            border: Border.all(
-              color: const Color.fromARGB(30, 158, 158, 158),
-            ),
-          ),
-          child: const Padding(
-            padding: EdgeInsets.only(left: 15, top: 15),
-            child: Text(
-              'Responder',
-              style: TextStyle(
-                color: Colors.grey,
-              ),
-            ),
-          ),
+                              return Container();
+                            }
+                            return const LoadingContentImageBuilder(size: 30);
+                          },
+                        ),
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.only(bottom: 5),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
+            return const LoadingContentImageBuilder();
+          },
         ),
       );
 
-  Widget boxCommentList(data, {isChild = false}) => ListView.builder(
+  Future<void> _launchUrl(Uri url) async {
+    if (!await launchUrl(url, mode: launchUrlMode)) {
+      throw Exception('Erro ao abrir $url');
+    }
+  }
+
+  Widget boxCommentList(List<dynamic> data, {bool isChild = false}) =>
+      ListView.builder(
         physics: const NeverScrollableScrollPhysics(),
         shrinkWrap: true,
         itemCount: data.length,
@@ -624,7 +601,7 @@ class _ContentViewPageState extends State<ContentViewPage> {
 
           return Card(
             elevation: 0,
-            child: Container(
+            child: DecoratedBox(
               decoration: BoxDecoration(
                 border: Border(
                   left: BorderSide(
@@ -708,7 +685,7 @@ class _ContentViewPageState extends State<ContentViewPage> {
                             onPressed: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(
+                                MaterialPageRoute<dynamic>(
                                   builder: (context) => ContentFormCommentPage(
                                     id: item.id!,
                                     title: item.body!,
@@ -721,7 +698,8 @@ class _ContentViewPageState extends State<ContentViewPage> {
                         ),
                         Visibility(
                           visible: hasChildren,
-                          child: boxCommentList(item.children, isChild: true),
+                          child: boxCommentList(item.children ?? [],
+                              isChild: true),
                         ),
                         const Padding(
                           padding: EdgeInsets.only(bottom: 3),
@@ -744,7 +722,7 @@ class _ContentViewPageState extends State<ContentViewPage> {
     Share.share('${constants.baseUrl}/$user/$slug', subject: '$title');
   }
 
-  Widget showMarkdownData(body) => MarkdownBody(
+  Widget showMarkdownData(String body) => MarkdownBody(
         data: body,
         selectable: true,
         onTapLink: (text, href, title) {
@@ -762,7 +740,7 @@ class _ContentViewPageState extends State<ContentViewPage> {
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(
+              MaterialPageRoute<dynamic>(
                 builder: (context) => ImageViewBuilder(
                   url: '$uri',
                   title: '$title',
@@ -786,7 +764,7 @@ class _ContentViewPageState extends State<ContentViewPage> {
               );
               //return const LoadingContentImageHelper(size: 40);
             },
-            errorBuilder: (context, error, stackTrace) => Container(
+            errorBuilder: (context, error, stackTrace) => ColoredBox(
               color: Colors.white,
               child: Padding(
                 padding: const EdgeInsets.all(8),

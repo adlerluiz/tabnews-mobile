@@ -15,7 +15,7 @@ class ApiContent {
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {
-      final dynamic result = jsonDecode(response.body);
+      final Map<String, dynamic> result = jsonDecode(response.body);
       throw result['message'];
     }
   }
@@ -52,7 +52,7 @@ class ApiContent {
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {
-      final result = jsonDecode(response.body);
+      final Map<String, dynamic> result = jsonDecode(response.body);
       throw result['message'];
     }
   }
@@ -87,7 +87,7 @@ class ApiContent {
     if (response.statusCode == 201) {
       return jsonDecode(response.body);
     } else {
-      final result = jsonDecode(response.body);
+      final Map<String, dynamic> result = jsonDecode(response.body);
       throw result['message'];
     }
   }
@@ -112,7 +112,7 @@ class ApiContent {
     if (response.statusCode == 201) {
       return jsonDecode(response.body);
     } else {
-      final result = jsonDecode(response.body);
+      final Map<String, dynamic> result = jsonDecode(response.body);
       throw result['message'];
     }
   }
@@ -130,7 +130,7 @@ class ApiContent {
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {
-      final result = jsonDecode(response.body);
+      final Map<String, dynamic> result = jsonDecode(response.body);
       throw result['message'];
     }
   }
@@ -147,7 +147,25 @@ class ApiContent {
     if (response.statusCode == 201) {
       return jsonDecode(response.body);
     } else {
-      final result = jsonDecode(response.body);
+      final Map<String, dynamic> result = jsonDecode(response.body);
+      throw result['message'];
+    }
+  }
+
+  Future<dynamic> patchComment(
+      String ownerUsername, String slug, String body, String parentId,
+      {String status = 'published'}) async {
+    final response = await _httpClient
+        .patch(Uri.parse('$baseUrl/contents/$ownerUsername/$slug'), body: {
+      'body': body,
+      'parent_id': parentId,
+      'status': status,
+    });
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      final Map<String, dynamic> result = jsonDecode(response.body);
       throw result['message'];
     }
   }

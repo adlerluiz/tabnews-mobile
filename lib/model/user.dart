@@ -3,7 +3,7 @@ class User {
   String? username;
   String? email;
   bool? notifications;
-  List? features;
+  List<dynamic>? features;
   int? tabcoins;
   int? tabcash;
   String? createdAt;
@@ -13,7 +13,7 @@ class User {
     this.id,
   });
 
-  User.fromJson(Map json)
+  User.fromJson(Map<String, dynamic> json)
       : id = json['id'],
         username = json['username'],
         email = json['email'],
@@ -24,15 +24,15 @@ class User {
         createdAt = json['created_at'],
         updatedAt = json['updated_at'];
 
-  Map toJson() => {
-      'id': id,
-      'username': username,
-      'email': email,
-      'notifications': notifications,
-      'features': features,
-      'tabcoins': tabcoins,
-      'tabcash': tabcash,
-      'created_at': createdAt,
-      'updated_at': updatedAt,
-    };
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'username': username,
+        'email': email,
+        'notifications': notifications,
+        'features': features,
+        'tabcoins': tabcoins,
+        'tabcash': tabcash,
+        'created_at': createdAt,
+        'updated_at': updatedAt,
+      };
 }

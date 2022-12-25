@@ -14,7 +14,7 @@ class ApiUser {
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {
-      final result = jsonDecode(response.body);
+      final Map<String, dynamic> result = jsonDecode(response.body);
       throw result['message'];
     }
   }

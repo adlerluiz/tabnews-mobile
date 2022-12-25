@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tabnews/model/user.dart';
 import 'package:tabnews/page/register_page.dart';
 import 'package:tabnews/service/api_user.dart';
 import 'package:tabnews/service/authenticated_http.dart';
@@ -39,18 +40,18 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> doLogin() async {
+    FocusScope.of(context).unfocus();
+
     try {
       await auth.login(
         controllerEmail.value.text,
         controllerPassword.value.text,
       );
 
-      final result = await apiUser.getMe();
-      final userId = result['id'] ?? '';
-      final userUsername = result['username'] ?? '';
+      final User user = User.fromJson(await apiUser.getMe());
 
-      await storage.sharedPreferencesAddString('user_id', userId);
-      await storage.sharedPreferencesAddString('user_username', userUsername);
+      await storage.sharedPreferencesAddString('user_id', user.id);
+      await storage.sharedPreferencesAddString('user_username', user.username);
 
       messengerService.show(context, text: 'Logado com sucesso!');
       Navigator.of(context).pop();
@@ -195,7 +196,7 @@ class _LoginPageState extends State<LoginPage> {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(
+                          MaterialPageRoute<dynamic>(
                             builder: (context) => const RegisterPage(),
                           ),
                         );

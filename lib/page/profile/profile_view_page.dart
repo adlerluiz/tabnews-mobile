@@ -24,7 +24,7 @@ class _ProfileViewPageState extends State<ProfileViewPage> {
   final PagingController<int, dynamic> _contentListController =
       PagingController(firstPageKey: 1);
 
-  Future<void> _fetchContentList(pageKey) async {
+  Future<void> _fetchContentList(int pageKey) async {
     try {
       final contentList =
           await apiContent.getByUser(widget.ownerUsername, pagina: pageKey);
@@ -56,31 +56,32 @@ class _ProfileViewPageState extends State<ProfileViewPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Atividades de ${widget.ownerUsername}',
-          style: const TextStyle(fontSize: 18),
-          overflow: TextOverflow.fade,
-        ),
-      ),
-      body: RefreshIndicator(
-        onRefresh: () => Future.sync(
-          _contentListController.refresh,
-        ),
-        child: PagedListView(
-          pagingController: _contentListController,
-          builderDelegate: PagedChildBuilderDelegate<dynamic>(
-            firstPageProgressIndicatorBuilder: (context) => const LoadingContentImageBuilder(),
-            itemBuilder: (context, data, index) {
-              final Content item = Content.fromJson(data);
-              return GenerateContentBuilder(
-                contentData: item,
-                index: index,
-                showUsername: false,
-              );
-            },
+        appBar: AppBar(
+          title: Text(
+            'Atividades de ${widget.ownerUsername}',
+            style: const TextStyle(fontSize: 18),
+            overflow: TextOverflow.fade,
           ),
         ),
-      ),
-    );
+        body: RefreshIndicator(
+          onRefresh: () => Future.sync(
+            _contentListController.refresh,
+          ),
+          child: PagedListView(
+            pagingController: _contentListController,
+            builderDelegate: PagedChildBuilderDelegate<dynamic>(
+              firstPageProgressIndicatorBuilder: (context) =>
+                  const LoadingContentImageBuilder(),
+              itemBuilder: (context, data, index) {
+                final Content item = Content.fromJson(data);
+                return GenerateContentBuilder(
+                  contentData: item,
+                  index: index,
+                  showUsername: false,
+                );
+              },
+            ),
+          ),
+        ),
+      );
 }

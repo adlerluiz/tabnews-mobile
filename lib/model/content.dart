@@ -13,7 +13,7 @@ class Content {
   String? deletedAt;
   String? ownerUsername;
   int? tabcoins;
-  List? children;
+  List<dynamic>? children;
   int? childrenDeepCount;
 
   Content({
@@ -35,7 +35,7 @@ class Content {
     this.childrenDeepCount,
   });
 
-  Content.fromJson(Map json)
+  Content.fromJson(Map<String, dynamic> json)
       : id = json['id'],
         ownerId = json['owner_id'],
         parentId = json['parent_id'],
@@ -53,22 +53,22 @@ class Content {
         children = json['children'],
         childrenDeepCount = json['children_deep_count'];
 
-  Map toJson() => {
-      'id': id,
-      'owner_id': ownerId,
-      'parent_id': parentId,
-      'slug': slug,
-      'title': title,
-      'body': body,
-      'status': status,
-      'source_url': sourceUrl,
-      'created_at': createdAt,
-      'updated_at': updatedAt,
-      'published_at': publishedAt,
-      'deleted_at': deletedAt,
-      'owner_username': ownerUsername,
-      'tabcoins': tabcoins,
-      'children': children,
-      'children_deep_count': childrenDeepCount,
-    };
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'owner_id': ownerId,
+        'parent_id': parentId,
+        'slug': slug,
+        'title': title,
+        'body': body,
+        'status': status,
+        'source_url': sourceUrl,
+        'created_at': createdAt,
+        'updated_at': updatedAt,
+        'published_at': publishedAt,
+        'deleted_at': deletedAt,
+        'owner_username': ownerUsername,
+        'tabcoins': tabcoins,
+        'children': children,
+        'children_deep_count': childrenDeepCount,
+      };
 }

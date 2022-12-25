@@ -30,7 +30,7 @@ class GenerateContentBuilder extends StatelessWidget {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(
+          MaterialPageRoute<dynamic>(
             builder: (context) => ContentViewPage(
               contentData: contentData,
             ),

@@ -98,7 +98,7 @@ class _HomePageState extends State<HomePage>
     }
   }
 
-  Future<void> _fetchRelevantPage(pageKey) async {
+  Future<void> _fetchRelevantPage(int pageKey) async {
     try {
       final contentList =
           await apiContent.getList(pagina: pageKey, estrategia: 'relevant');
@@ -116,7 +116,7 @@ class _HomePageState extends State<HomePage>
     }
   }
 
-  Future<void> _fetchRecentPage(pageKey) async {
+  Future<void> _fetchRecentPage(int pageKey) async {
     try {
       final contentList = await apiContent.getList(pagina: pageKey);
 
@@ -151,7 +151,7 @@ class _HomePageState extends State<HomePage>
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
+                  MaterialPageRoute<dynamic>(
                     builder: (context) => const ProfileHomePage(),
                   ),
                 );
@@ -250,7 +250,7 @@ class _HomePageState extends State<HomePage>
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(
+              MaterialPageRoute<dynamic>(
                 builder: (context) => const ContentFormPage(),
               ),
             );

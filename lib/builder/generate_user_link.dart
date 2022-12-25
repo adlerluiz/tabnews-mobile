@@ -12,7 +12,7 @@ class GenerateUserLinkBuilder extends StatelessWidget {
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(
+              MaterialPageRoute<dynamic>(
                 builder: (context) => ProfileViewPage(
                   ownerUsername: ownerUsername,
                 ),

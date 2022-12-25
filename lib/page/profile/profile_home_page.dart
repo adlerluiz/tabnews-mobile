@@ -30,21 +30,23 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
   final PagingController<int, dynamic> _contentListController =
       PagingController(firstPageKey: 1);
 
-  ValueNotifier valueNotifierIsLogged = ValueNotifier(false);
+  ValueNotifier<bool> valueNotifierIsLogged = ValueNotifier(false);
 
   late String username = '';
 
-  getUsername() async {
+  Future<void> getUsername() async {
     username = await storage.sharedPreferencesGet('user_username', '');
+    setState(() {});
   }
 
-  checkIsLogged() async {
+  Future<void> checkIsLogged() async {
     valueNotifierIsLogged.value = await auth.isLogged();
   }
 
-  Future<void> _fetchContentList(pageKey) async {
+  Future<void> _fetchContentList(int pageKey) async {
     try {
-      final contentList = await apiContent.getByUser(username, pagina: pageKey);
+      final List<dynamic> contentList =
+          await apiContent.getByUser(username, pagina: pageKey);
 
       final isLastPage = contentList.length != pageSize;
 
@@ -132,7 +134,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                       SizedBox(
                         width: 65,
                         height: 65,
-                        child: Container(
+                        child: DecoratedBox(
                           decoration: BoxDecoration(
                             color: Colors.grey,
                             borderRadius: BorderRadius.circular(50),
@@ -245,7 +247,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                                       onPressed: () {
                                         Navigator.push(
                                           context,
-                                          MaterialPageRoute(
+                                          MaterialPageRoute<dynamic>(
                                             builder: (context) =>
                                                 const ContentFormPage(),
                                           ),
@@ -296,9 +298,8 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                             builder: (context) => const LoginPage(),
                           ),
                         ).then((_) {
-                          setState(() {
-                            getUsername();
-                          });
+                          _contentListController.refresh();
+                          getUsername();
                         });
                       },
                       child: const Text('Logar'),

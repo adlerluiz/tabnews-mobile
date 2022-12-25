@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class MessengerService {
-  void show(context, {String text = '', int duration = 2}) {
+  void show(dynamic context, {String text = '', int duration = 2}) {
     final SnackBar snackBar = SnackBar(
       content: Text(text),
       duration: Duration(seconds: duration),
@@ -9,7 +9,7 @@ class MessengerService {
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
-  void clear(context) {
+  void clear(dynamic context) {
     ScaffoldMessenger.of(context).clearSnackBars();
   }
 }
