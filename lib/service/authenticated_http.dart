@@ -72,17 +72,11 @@ class AuthenticatedHttpClient extends http.BaseClient {
   }
 
   Future<bool> isLogged() async {
-    bool isLogged = false;
-
     final now = DateTime.now();
     var expiresAt = await storage.sharedPreferencesGet('expires_at', '$now');
     expiresAt = DateTime.parse(expiresAt);
 
-    if (now.compareTo(expiresAt) == -1) {
-      isLogged = true;
-    }
-
-    return isLogged;
+    return now.compareTo(expiresAt) == -1;
   }
 
   void logout() {
