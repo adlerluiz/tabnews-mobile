@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:tabnews/builder/generate_content.dart';
 import 'package:tabnews/builder/loading_content_image.dart';
+import 'package:tabnews/constants.dart' as constants;
 import 'package:tabnews/model/content.dart';
 import 'package:tabnews/model/user.dart';
 import 'package:tabnews/page/content/content_form_page.dart';
@@ -12,7 +13,6 @@ import 'package:tabnews/service/api_user.dart';
 import 'package:tabnews/service/authenticated_http.dart';
 import 'package:tabnews/service/storage.dart';
 
-const pageSize = 30;
 
 class ProfileHomePage extends StatefulWidget {
   const ProfileHomePage({super.key});
@@ -48,7 +48,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
       final List<dynamic> contentList =
           await apiContent.getByUser(username, pagina: pageKey);
 
-      final isLastPage = contentList.length != pageSize;
+      final isLastPage = contentList.length != constants.pageSize;
 
       if (isLastPage) {
         _contentListController.appendLastPage(contentList);

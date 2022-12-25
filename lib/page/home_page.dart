@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:tabnews/builder/generate_content.dart';
 import 'package:tabnews/builder/loading_content_image.dart';
+import 'package:tabnews/constants.dart' as constants;
 import 'package:tabnews/model/content.dart';
 import 'package:tabnews/page/content/content_form_page.dart';
 import 'package:tabnews/page/profile/profile_home_page.dart';
@@ -11,7 +12,6 @@ import 'package:tabnews/service/api_content.dart';
 import 'package:tabnews/service/storage.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
-const pageSize = 30;
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key, required this.appName});
@@ -85,7 +85,7 @@ class _HomePageState extends State<HomePage>
 
       contentList = jsonDecode(contentList).reversed.toList();
 
-      final isLastPage = contentList.length != pageSize;
+      final isLastPage = contentList.length != constants.pageSize;
 
       if (isLastPage) {
         _favoritePagingController.appendLastPage(contentList);
@@ -103,7 +103,7 @@ class _HomePageState extends State<HomePage>
       final contentList =
           await apiContent.getList(pagina: pageKey, estrategia: 'relevant');
 
-      final isLastPage = contentList.length != pageSize;
+      final isLastPage = contentList.length != constants.pageSize;
 
       if (isLastPage) {
         _relevantPagingController.appendLastPage(contentList);
@@ -120,7 +120,7 @@ class _HomePageState extends State<HomePage>
     try {
       final contentList = await apiContent.getList(pagina: pageKey);
 
-      final isLastPage = contentList.length != pageSize;
+      final isLastPage = contentList.length != constants.pageSize;
 
       if (isLastPage) {
         _recentPagingController.appendLastPage(contentList);
