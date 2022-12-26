@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:tabnews/builder/generate_content.dart';
 import 'package:tabnews/builder/loading_content_image.dart';
+import 'package:tabnews/constants.dart' as constants;
 import 'package:tabnews/model/content.dart';
 import 'package:tabnews/service/api_content.dart';
 import 'package:tabnews/service/api_user.dart';
-
-const pageSize = 30;
 
 class ProfileViewPage extends StatefulWidget {
   const ProfileViewPage({super.key, required this.ownerUsername});
@@ -29,7 +28,7 @@ class _ProfileViewPageState extends State<ProfileViewPage> {
       final contentList =
           await apiContent.getByUser(widget.ownerUsername, pagina: pageKey);
 
-      final isLastPage = contentList.length != pageSize;
+      final isLastPage = contentList.length != constants.pageSize;
 
       if (isLastPage) {
         _contentListController.appendLastPage(contentList);
