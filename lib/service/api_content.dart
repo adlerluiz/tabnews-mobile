@@ -49,7 +49,7 @@ class ApiContent {
         Uri.parse('$baseUrl/contents/$ownerUsername/$slug/tabcoins'),
         body: {'transaction_type': transactionType});
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 201) {
       return jsonDecode(response.body);
     } else {
       final Map<String, dynamic> result = jsonDecode(response.body);
@@ -109,7 +109,7 @@ class ApiContent {
         Uri.parse('$baseUrl/contents/$ownerUsername/$slug'),
         body: payload);
 
-    if (response.statusCode == 201) {
+    if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {
       final Map<String, dynamic> result = jsonDecode(response.body);

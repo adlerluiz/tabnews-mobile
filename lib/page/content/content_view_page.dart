@@ -459,7 +459,7 @@ class _ContentViewPageState extends State<ContentViewPage> {
                           Row(
                             children: [
                               IconButton(
-                                tooltip: 'Creditar TabCoin',
+                                tooltip: 'Adicionar TabCoin',
                                 onPressed: () async {
                                   await thumbPost('credit');
                                 },
@@ -470,7 +470,7 @@ class _ContentViewPageState extends State<ContentViewPage> {
                                 '${data.tabcoins}',
                               ),
                               IconButton(
-                                tooltip: 'Debitar TabCoin',
+                                tooltip: 'Subtrair TabCoin',
                                 onPressed: () async {
                                   await thumbPost('debit');
                                 },
@@ -619,7 +619,7 @@ class _ContentViewPageState extends State<ContentViewPage> {
                     child: Column(
                       children: [
                         IconButton(
-                          tooltip: 'Creditar TabCoin',
+                          tooltip: 'Adicionar TabCoin',
                           onPressed: () async {
                             await thumbComment(item, 'credit');
                           },
@@ -632,7 +632,7 @@ class _ContentViewPageState extends State<ContentViewPage> {
                           softWrap: true,
                         ),
                         IconButton(
-                          tooltip: 'Debitar TabCoin',
+                          tooltip: 'Subtrair TabCoin',
                           onPressed: () async {
                             await thumbComment(item, 'debit');
                           },
