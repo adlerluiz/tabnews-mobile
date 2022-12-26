@@ -71,4 +71,12 @@ class Content {
         'children': children,
         'children_deep_count': childrenDeepCount,
       };
+
+  bool matchFilter(String filter) {
+    if (title != null && title!.toLowerCase().contains(filter.toLowerCase())) {
+      return true;
+    }
+
+    return false;
+  }
 }
