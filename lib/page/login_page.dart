@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:tabnews/model/user.dart';
 import 'package:tabnews/page/register_page.dart';
@@ -52,6 +54,8 @@ class _LoginPageState extends State<LoginPage> {
 
       await storage.sharedPreferencesAddString('user_id', user.id);
       await storage.sharedPreferencesAddString('user_username', user.username);
+      await storage.sharedPreferencesAddString(
+          'user_features', jsonEncode(user.features));
 
       messengerService.show(context, text: 'Logado com sucesso!');
       Navigator.of(context).pop();

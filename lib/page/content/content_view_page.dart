@@ -14,6 +14,7 @@ import 'package:tabnews/page/content/content_form_page.dart';
 import 'package:tabnews/service/api_content.dart';
 import 'package:tabnews/service/messenger.dart';
 import 'package:tabnews/service/storage.dart';
+import 'package:tabnews/service/user_features.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:url_launcher/url_launcher.dart';
 
@@ -30,6 +31,7 @@ class _ContentViewPageState extends State<ContentViewPage> {
   StorageService storage = StorageService();
 
   MessengerService messengerService = MessengerService();
+  UserFeaturesService userFeaturesService = UserFeaturesService();
 
   ApiContent apiContent = ApiContent();
 
@@ -67,7 +69,12 @@ class _ContentViewPageState extends State<ContentViewPage> {
 
   Future<void> getParams() async {
     final String userId = await storage.sharedPreferencesGet('user_id', '');
-    if (userId == widget.contentData.ownerId!) {
+
+    final bool canEditAndDeleteContentOthers =
+        await userFeaturesService.hasFeature('update:content:others');
+
+    if (userId == widget.contentData.ownerId! ||
+        canEditAndDeleteContentOthers) {
       setState(() {
         canEdit = true;
       });
