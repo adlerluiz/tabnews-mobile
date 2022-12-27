@@ -173,6 +173,7 @@ class _HomePageState extends State<HomePage>
               ? TextField(
                   controller: filterController,
                   onChanged: (newText) => setState(() {}),
+                  autofocus: true,
                 )
               : Text(widget.appName),
           actions: [
@@ -219,6 +220,11 @@ class _HomePageState extends State<HomePage>
                       const LoadingContentImageBuilder(),
                   itemBuilder: (context, data, index) {
                     final Content item = Content.fromJson(data);
+
+                    if (!item.matchFilter(filterController.text)) {
+                      return const SizedBox.shrink();
+                    }
+
                     return GenerateContentBuilder(
                       contentData: item,
                       index: index,
@@ -262,8 +268,12 @@ class _HomePageState extends State<HomePage>
                   builderDelegate: PagedChildBuilderDelegate<dynamic>(
                     firstPageProgressIndicatorBuilder: (context) =>
                         const LoadingContentImageBuilder(),
-                    itemBuilder: (context, item, index) {
-                      item = Content.fromJson(item);
+                    itemBuilder: (context, data, index) {
+                      final Content item = Content.fromJson(data);
+
+                      if (!item.matchFilter(filterController.text)) {
+                        return const SizedBox.shrink();
+                      }
 
                       return GenerateContentBuilder(
                         contentData: item,
