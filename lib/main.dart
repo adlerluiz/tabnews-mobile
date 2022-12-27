@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:intl/intl.dart';
 import 'package:tabnews/page/home_page.dart';
 import 'package:tabnews/service/global_current_theme.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  Intl.defaultLocale = 'pt_BR';
   runApp(const MyApp());
 }
 

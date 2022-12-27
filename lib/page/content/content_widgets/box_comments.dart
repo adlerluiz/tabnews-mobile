@@ -1,8 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:tabnews/builder/generate_user_link.dart';
 import 'package:tabnews/model/content.dart';
 import 'package:tabnews/page/content/content_form_comment_page.dart';
+import 'package:tabnews/page/content/content_view_page.dart';
 import 'package:tabnews/page/content/content_widgets/markdown_data.dart';
 import 'package:tabnews/service/api_content.dart';
 import 'package:tabnews/service/messenger.dart';
@@ -96,16 +98,34 @@ class BoxComments extends StatelessWidget {
                             GenerateUserLinkBuilder(
                                 ownerUsername: item.ownerUsername!),
                             const Text(' • '),
-                            Expanded(
-                              child: Text(
-                                timeago.format(
-                                    DateTime.parse(item.publishedAt!),
-                                    locale: 'pt_BR'),
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 1,
-                                softWrap: true,
-                                style: const TextStyle(
-                                  fontSize: 11,
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute<dynamic>(
+                                    builder: (context) => ContentViewPage(
+                                      contentData: item,
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: Expanded(
+                                child: Tooltip(
+                                  message: DateFormat(
+                                          "EEEE, dd 'de' MMM 'de' yyyy HH:mm")
+                                      .format(
+                                          DateTime.parse(item.publishedAt!)),
+                                  child: Text(
+                                    timeago.format(
+                                        DateTime.parse(item.publishedAt!),
+                                        locale: 'pt_BR'),
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                    softWrap: true,
+                                    style: const TextStyle(
+                                      fontSize: 11,
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),

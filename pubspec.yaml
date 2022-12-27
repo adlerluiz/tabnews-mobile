@@ -30,6 +30,7 @@ dependencies:
   photo_view: ^0.14.0
   package_info_plus: ^3.0.2
   pinch_zoom_release_unzoom: ^0.0.10
+  intl: ^0.17.0
 
 dev_dependencies:
   flutter_test:

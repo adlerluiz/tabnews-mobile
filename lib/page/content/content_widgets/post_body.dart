@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:intl/intl.dart';
 import 'package:pinch_zoom_release_unzoom/pinch_zoom_release_unzoom.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:tabnews/builder/generate_user_link.dart';
@@ -62,15 +63,20 @@ class _PostBodyState extends State<PostBody> {
                     GenerateUserLinkBuilder(
                         ownerUsername: widget.contentData.ownerUsername!),
                     const Text(' • '),
-                    Text(
-                      timeago.format(
-                          DateTime.parse(widget.contentData.publishedAt!),
-                          locale: 'pt_BR'),
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                      softWrap: true,
-                      style: const TextStyle(
-                        fontSize: 11,
+                    Tooltip(
+                      message: DateFormat("EEEE, dd 'de' MMM 'de' yyyy HH:mm")
+                          .format(
+                              DateTime.parse(widget.contentData.publishedAt!)),
+                      child: Text(
+                        timeago.format(
+                            DateTime.parse(widget.contentData.publishedAt!),
+                            locale: 'pt_BR'),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                        softWrap: true,
+                        style: const TextStyle(
+                          fontSize: 11,
+                        ),
                       ),
                     ),
                   ],
@@ -241,7 +247,9 @@ class _PostBodyState extends State<PostBody> {
                               widget.contentData.body!,
                         ),
                       ),
-                    );
+                    ).then((value) {
+                      setState(() {});
+                    });
                   },
                   child: const Text('Responder'),
                 ),
