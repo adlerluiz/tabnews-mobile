@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
+
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
-import 'package:tabnews/builder/generate_content.dart';
-import 'package:tabnews/builder/loading_content_image.dart';
 import 'package:tabnews/constants.dart' as constants;
-import 'package:tabnews/model/content.dart';
+import 'package:tabnews/page/widgets/box_generate_content_widget.dart';
 import 'package:tabnews/service/api_content.dart';
 import 'package:tabnews/service/api_user.dart';
 
@@ -20,12 +19,12 @@ class _ProfileViewPageState extends State<ProfileViewPage> {
   ApiUser apiUser = ApiUser();
   ApiContent apiContent = ApiContent();
 
-  final PagingController<int, dynamic> _contentListController =
+  final PagingController<int, dynamic> _contentListController = 
       PagingController(firstPageKey: 1);
 
   Future<void> _fetchContentList(int pageKey) async {
     try {
-      final contentList =
+      final contentList = 
           await apiContent.getByUser(widget.ownerUsername, pagina: pageKey);
 
       final isLastPage = contentList.length != constants.pageSize;
@@ -62,25 +61,9 @@ class _ProfileViewPageState extends State<ProfileViewPage> {
             overflow: TextOverflow.fade,
           ),
         ),
-        body: RefreshIndicator(
-          onRefresh: () => Future.sync(
-            _contentListController.refresh,
-          ),
-          child: PagedListView(
-            pagingController: _contentListController,
-            builderDelegate: PagedChildBuilderDelegate<dynamic>(
-              firstPageProgressIndicatorBuilder: (context) =>
-                  const LoadingContentImageBuilder(),
-              itemBuilder: (context, data, index) {
-                final Content item = Content.fromJson(data);
-                return GenerateContentBuilder(
-                  contentData: item,
-                  index: index,
-                  showUsername: false,
-                );
-              },
-            ),
-          ),
+        body: BoxGenerateContentWidget(
+          pagingController: _contentListController,
+          showUserName: false,
         ),
       );
 }

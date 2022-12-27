@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
+
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
-import 'package:tabnews/builder/generate_content.dart';
 import 'package:tabnews/builder/loading_content_image.dart';
 import 'package:tabnews/constants.dart' as constants;
-import 'package:tabnews/model/content.dart';
 import 'package:tabnews/model/user.dart';
 import 'package:tabnews/page/content/content_form_page.dart';
 import 'package:tabnews/page/login_page.dart';
 import 'package:tabnews/page/settings_page.dart';
+import 'package:tabnews/page/widgets/box_generate_content_widget.dart';
+import 'package:tabnews/page/widgets/tooltip_tab_counter_widget.dart';
 import 'package:tabnews/service/api_content.dart';
 import 'package:tabnews/service/api_user.dart';
 import 'package:tabnews/service/authenticated_http.dart';
 import 'package:tabnews/service/storage.dart';
-
 
 class ProfileHomePage extends StatefulWidget {
   const ProfileHomePage({super.key});
@@ -27,8 +27,8 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
   ApiContent apiContent = ApiContent();
   AuthenticatedHttpClient auth = AuthenticatedHttpClient();
 
-  final PagingController<int, dynamic> _contentListController =
-      PagingController(firstPageKey: 1);
+  final PagingController<int, dynamic> _contentListController = 
+    PagingController(firstPageKey: 1);
 
   ValueNotifier<bool> valueNotifierIsLogged = ValueNotifier(false);
 
@@ -45,7 +45,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
 
   Future<void> _fetchContentList(int pageKey) async {
     try {
-      final List<dynamic> contentList =
+      final List<dynamic> contentList = 
           await apiContent.getByUser(username, pagina: pageKey);
 
       final isLastPage = contentList.length != constants.pageSize;
@@ -163,110 +163,63 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Tooltip(
+                          TooltipTabCounterWidget(
                             message: 'TabCoins',
-                            triggerMode: TooltipTriggerMode.tap,
-                            child: Row(
-                              children: [
-                                Container(
-                                  width: 14,
-                                  height: 14,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(3),
-                                    color: Colors.blue,
-                                  ),
-                                ),
-                                const Padding(
-                                    padding: EdgeInsets.only(left: 3)),
-                                Text('${data.tabcoins}')
-                              ],
-                            ),
+                            tabInfo: data.tabcoins.toString(),
+                            color: Colors.blue,
                           ),
                           const Padding(
                             padding: EdgeInsets.symmetric(horizontal: 6),
                           ),
-                          Tooltip(
+                          TooltipTabCounterWidget(
                             message: 'TabCash',
-                            triggerMode: TooltipTriggerMode.tap,
-                            child: Row(
-                              children: [
-                                Container(
-                                  width: 14,
-                                  height: 14,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(3),
-                                    color: Colors.green,
-                                  ),
-                                ),
-                                const Padding(
-                                    padding: EdgeInsets.only(left: 3)),
-                                Text('${data.tabcash}')
-                              ],
-                            ),
-                          )
+                            tabInfo: data.tabcash.toString(),
+                            color: Colors.green,
+                          ),
                         ],
                       ),
                       const Padding(
                         padding: EdgeInsets.only(bottom: 5),
                       ),
                       Expanded(
-                        child: RefreshIndicator(
-                          onRefresh: () => Future.sync(
-                            _contentListController.refresh,
-                          ),
-                          child: PagedListView(
-                            pagingController: _contentListController,
-                            builderDelegate: PagedChildBuilderDelegate<dynamic>(
-                              firstPageProgressIndicatorBuilder: (context) =>
-                                  const LoadingContentImageBuilder(),
-                              noItemsFoundIndicatorBuilder: (context) => Center(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    const Text(
-                                      'Nenhum conteúdo encontrado',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    const Text(
-                                        'Você ainda não fez nenhuma publicação.'),
-                                    const Padding(
-                                      padding: EdgeInsets.only(bottom: 10),
-                                    ),
-                                    ElevatedButton.icon(
-                                      style: ElevatedButton.styleFrom(
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                        ),
-                                      ),
-                                      icon: const Icon(Icons.add),
-                                      label:
-                                          const Text('Publicar novo conteúdo'),
-                                      onPressed: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute<dynamic>(
-                                            builder: (context) =>
-                                                const ContentFormPage(),
-                                          ),
-                                        ).then((params) {
-                                          _contentListController.refresh();
-                                        });
-                                      },
-                                    )
-                                  ],
+                        child: BoxGenerateContentWidget(
+                          pagingController: _contentListController,
+                          showUserName: false,
+                          noItemsFoundIndicatorBuilder: (context) => Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Text(
+                                  'Nenhum conteúdo encontrado',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
-                              ),
-                              itemBuilder: (context, data, index) {
-                                final Content item = Content.fromJson(data);
-                                return GenerateContentBuilder(
-                                  contentData: item,
-                                  index: index,
-                                  showUsername: false,
-                                );
-                              },
+                                const Text(
+                                    'Você ainda não fez nenhuma publicação.'),
+                                const Padding(
+                                  padding: EdgeInsets.only(bottom: 10),
+                                ),
+                                ElevatedButton.icon(
+                                  style: ElevatedButton.styleFrom(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                  icon: const Icon(Icons.add),
+                                  label: const Text('Publicar novo conteúdo'),
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute<dynamic>(
+                                        builder: (context) => const ContentFormPage(),
+                                      ),
+                                    ).then((params) {
+                                      _contentListController.refresh();
+                                    });
+                                  },
+                                )
+                              ],
                             ),
                           ),
                         ),
