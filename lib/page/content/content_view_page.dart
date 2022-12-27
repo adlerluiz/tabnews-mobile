@@ -11,13 +11,11 @@ import 'package:tabnews/service/api_content.dart';
 import 'package:tabnews/service/messenger.dart';
 import 'package:tabnews/service/storage.dart';
 import 'package:tabnews/service/user_features.dart';
-import 'package:timeago/timeago.dart' as timeago;
-import 'package:url_launcher/url_launcher.dart';
 
 class ContentViewPage extends StatefulWidget {
   const ContentViewPage({
-    super.key,
     required this.contentData,
+    super.key,
   });
 
   final Content contentData;
@@ -44,16 +42,14 @@ class _ContentViewPageState extends State<ContentViewPage> {
 
   late bool showResponseButton = true;
 
-  //ValueNotifier<bool> canComment = ValueNotifier(false);
-
   bool canEdit = false;
 
   @override
   void initState() {
     super.initState();
 
-    pageScrollController!.addListener(() {
-      if (pageScrollController!.offset >= 50) {
+    pageScrollController.addListener(() {
+      if (pageScrollController.offset >= 50) {
         hasScrolled.value = true;
       } else {
         hasScrolled.value = false;
@@ -122,11 +118,9 @@ class _ContentViewPageState extends State<ContentViewPage> {
 
   Future<dynamic> getData() async {
     try {
-      //canComment.value = true;
       return await apiContent.get(
           widget.contentData.ownerUsername!, widget.contentData.slug!);
     } catch (e) {
-      //canComment.value = false;
       return Future.error(e);
     }
   }
