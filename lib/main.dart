@@ -62,7 +62,9 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
           seedColor: Colors.blue,
         ),
       ),
-      home: const HomePage(appName: appName),
+      home: const HomePage(
+        appName: appName,
+      ),
     );
   }
 }

@@ -5,12 +5,12 @@ import 'package:timeago/timeago.dart' as timeago;
 
 class GenerateContentBuilder extends StatelessWidget {
   const GenerateContentBuilder({
-    super.key,
     required this.contentData,
     required this.index,
     this.showUsername = true,
     this.showComments = true,
     this.showTabcoins = true,
+    super.key,
   });
 
   final Content contentData;
@@ -22,7 +22,9 @@ class GenerateContentBuilder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     bool isComment = false;
-    if (contentData.parentId != null) isComment = true;
+    if (contentData.parentId != null) {
+      isComment = true;
+    }
     return ListTile(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(6),
@@ -56,7 +58,7 @@ class GenerateContentBuilder extends StatelessWidget {
         overflow: TextOverflow.ellipsis,
         softWrap: true,
       ),
-      subtitle: Row(
+      subtitle: Wrap(
         children: [
           Visibility(
             visible: showTabcoins,
@@ -87,18 +89,17 @@ class GenerateContentBuilder extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 11,
               ),
+              overflow: TextOverflow.fade,
             ),
           ),
-          Flexible(
-            child: Text(
-              timeago.format(DateTime.parse(contentData.publishedAt!),
-                  locale: 'pt_BR'),
-              overflow: TextOverflow.ellipsis,
-              maxLines: 1,
-              softWrap: true,
-              style: const TextStyle(
-                fontSize: 11,
-              ),
+          Text(
+            timeago.format(DateTime.parse(contentData.publishedAt!),
+                locale: 'pt_BR'),
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
+            softWrap: true,
+            style: const TextStyle(
+              fontSize: 11,
             ),
           )
         ],

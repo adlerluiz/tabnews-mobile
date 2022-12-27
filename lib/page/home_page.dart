@@ -12,9 +12,11 @@ import 'package:tabnews/service/api_content.dart';
 import 'package:tabnews/service/storage.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
-
 class HomePage extends StatefulWidget {
-  const HomePage({super.key, required this.appName});
+  const HomePage({
+    required this.appName,
+    super.key,
+  });
 
   final String appName;
 
@@ -40,6 +42,9 @@ class _HomePageState extends State<HomePage>
       PagingController(firstPageKey: 1);
 
   ApiContent apiContent = ApiContent();
+
+  // Filter controller
+  TextEditingController filterController = TextEditingController();
 
   @override
   void initState() {
@@ -137,13 +142,39 @@ class _HomePageState extends State<HomePage>
     setState(() {
       _navigationTabPageIndex = index;
     });
+
+    if (!mounted) {
+      return;
+    }
+
     _navigationTabController?.animateTo(index);
   }
 
+  bool isFiltering = false;
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
-          title: Text(widget.appName),
+          leading: isFiltering
+              ? IconButton(
+                  onPressed: () => setState(() {
+                    // Hide and reset filter
+                    isFiltering = false;
+                    filterController.text = '';
+                  }),
+                  icon: const Icon(Icons.close),
+                )
+              : IconButton(
+                  onPressed: () => setState(() {
+                    isFiltering = true;
+                  }),
+                  icon: const Icon(Icons.search),
+                ),
+          title: isFiltering
+              ? TextField(
+                  controller: filterController,
+                  onChanged: (newText) => setState(() {}),
+                )
+              : Text(widget.appName),
           actions: [
             IconButton(
               tooltip: 'Perfil',
@@ -188,7 +219,6 @@ class _HomePageState extends State<HomePage>
                       const LoadingContentImageBuilder(),
                   itemBuilder: (context, data, index) {
                     final Content item = Content.fromJson(data);
-
                     return GenerateContentBuilder(
                       contentData: item,
                       index: index,
@@ -211,6 +241,10 @@ class _HomePageState extends State<HomePage>
                         const LoadingContentImageBuilder(),
                     itemBuilder: (context, data, index) {
                       final Content item = Content.fromJson(data);
+
+                      if (!item.matchFilter(filterController.text)) {
+                        return const SizedBox.shrink();
+                      }
 
                       return GenerateContentBuilder(
                         contentData: item,
