@@ -29,4 +29,18 @@ class ApiUser {
       return [];
     }
   }
+
+  Future<dynamic> banUser(String ownerUsername,
+      {String banType = 'nuke'}) async {
+    final response = await _httpClient.delete(
+      Uri.parse('$baseUrl/users/$ownerUsername'),
+      body: {'ban_type': banType},
+    );
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return 'Erro ao banir usuário';
+    }
+  }
 }

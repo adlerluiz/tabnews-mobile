@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tabnews/page/profile/profile_view_page.dart';
 
 class GenerateUserLinkBuilder extends StatelessWidget {
-  const GenerateUserLinkBuilder({super.key, required this.ownerUsername});
+  const GenerateUserLinkBuilder({required this.ownerUsername, super.key});
 
   final String ownerUsername;
 
