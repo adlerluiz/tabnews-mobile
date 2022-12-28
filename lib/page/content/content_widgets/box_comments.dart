@@ -17,10 +17,13 @@ class BoxComments extends StatelessWidget {
   final ApiContent apiContent;
   final MessengerService messengerService;
 
+  final bool preventAccidentalTabcoinTapComment;
+
   const BoxComments(
     this.data, {
     required this.apiContent,
     required this.messengerService,
+    required this.preventAccidentalTabcoinTapComment,
     this.isChild = false,
     super.key,
   });
@@ -56,11 +59,15 @@ class BoxComments extends StatelessWidget {
                         IconButton(
                           tooltip: 'Adicionar TabCoin',
                           onPressed: () async {
-                            await thumbComment(
-                              item,
-                              'credit',
-                              context,
-                            );
+                            if (preventAccidentalTabcoinTapComment) {
+                              showPreventTabcoinTap(item, 'credit', context);
+                            } else {
+                              await thumbComment(
+                                item,
+                                'credit',
+                                context,
+                              );
+                            }
                           },
                           icon: const Icon(
                             Icons.keyboard_arrow_up_rounded,
@@ -73,11 +80,15 @@ class BoxComments extends StatelessWidget {
                         IconButton(
                           tooltip: 'Subtrair TabCoin',
                           onPressed: () async {
-                            await thumbComment(
-                              item,
-                              'debit',
-                              context,
-                            );
+                            if (preventAccidentalTabcoinTapComment) {
+                              showPreventTabcoinTap(item, 'debit', context);
+                            } else {
+                              await thumbComment(
+                                item,
+                                'debit',
+                                context,
+                              );
+                            }
                           },
                           icon: const Icon(
                             Icons.keyboard_arrow_down_rounded,
@@ -98,23 +109,22 @@ class BoxComments extends StatelessWidget {
                             GenerateUserLinkBuilder(
                                 ownerUsername: item.ownerUsername!),
                             const Text(' • '),
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute<dynamic>(
-                                    builder: (context) => ContentViewPage(
-                                      contentData: item,
-                                    ),
-                                  ),
-                                );
-                              },
-                              child: Expanded(
-                                child: Tooltip(
-                                  message: DateFormat(
-                                          "EEEE, dd 'de' MMM 'de' yyyy HH:mm")
-                                      .format(
-                                          DateTime.parse(item.publishedAt!)),
+                            Expanded(
+                              child: Tooltip(
+                                message: DateFormat(
+                                        "EEEE, dd 'de' MMM 'de' yyyy HH:mm")
+                                    .format(DateTime.parse(item.publishedAt!)),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute<dynamic>(
+                                        builder: (context) => ContentViewPage(
+                                          contentData: item,
+                                        ),
+                                      ),
+                                    );
+                                  },
                                   child: Text(
                                     timeago.format(
                                         DateTime.parse(item.publishedAt!),
@@ -164,6 +174,8 @@ class BoxComments extends StatelessWidget {
                             isChild: true,
                             apiContent: apiContent,
                             messengerService: messengerService,
+                            preventAccidentalTabcoinTapComment:
+                                preventAccidentalTabcoinTapComment,
                           ),
                         ),
                         const Padding(
@@ -178,6 +190,33 @@ class BoxComments extends StatelessWidget {
           );
         },
       );
+
+  void showPreventTabcoinTap(
+      Content item, String transactionType, BuildContext context) {
+    showDialog<void>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Deseja realmente fazer isso?'),
+        content: const Text(
+            'Você está vendo isso pois habilitou nas configurações a prevenção de toque acidental de tabcoin.'),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('Não'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+          TextButton(
+            child: const Text('Sim'),
+            onPressed: () async {
+              await thumbComment(item, transactionType, context);
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      ),
+    );
+  }
 
   Future<void> thumbComment(
       Content item, String transactionType, BuildContext context) async {

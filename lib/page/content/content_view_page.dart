@@ -44,6 +44,9 @@ class _ContentViewPageState extends State<ContentViewPage> {
 
   bool canEdit = false;
 
+  bool showMessagePreventAccidentalTabcoinTapPost = false;
+  bool showMessagePreventAccidentalTabcoinTapComment = false;
+
   @override
   void initState() {
     super.initState();
@@ -65,6 +68,19 @@ class _ContentViewPageState extends State<ContentViewPage> {
 
     final bool canEditAndDeleteContentOthers =
         await userFeaturesService.hasFeature('update:content:others');
+
+    final String preventAccidentalTabcoinTap = await storage
+        .sharedPreferencesGetString('prevent_accidental_tabcoin_tap', 'none');
+
+    setState(() {
+      showMessagePreventAccidentalTabcoinTapPost =
+          preventAccidentalTabcoinTap == 'post' ||
+              preventAccidentalTabcoinTap == 'all';
+
+      showMessagePreventAccidentalTabcoinTapComment =
+          preventAccidentalTabcoinTap == 'comment' ||
+              preventAccidentalTabcoinTap == 'all';
+    });
 
     if (userId == widget.contentData.ownerId! ||
         canEditAndDeleteContentOthers) {
@@ -339,6 +355,10 @@ class _ContentViewPageState extends State<ContentViewPage> {
                 data: data,
                 apiContent: apiContent,
                 messengerService: messengerService,
+                preventAccidentalTabcoinTapPost:
+                    showMessagePreventAccidentalTabcoinTapPost,
+                preventAccidentalTabcoinTapComment:
+                    showMessagePreventAccidentalTabcoinTapComment,
               );
             }
             return const LoadingContentImageBuilder();

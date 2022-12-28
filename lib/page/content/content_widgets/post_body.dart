@@ -24,6 +24,9 @@ class PostBody extends StatefulWidget {
   final ApiContent apiContent;
   final MessengerService messengerService;
 
+  final bool preventAccidentalTabcoinTapPost;
+  final bool preventAccidentalTabcoinTapComment;
+
   const PostBody({
     required this.pageScrollController,
     required this.contentData,
@@ -31,6 +34,8 @@ class PostBody extends StatefulWidget {
     required this.data,
     required this.apiContent,
     required this.messengerService,
+    required this.preventAccidentalTabcoinTapPost,
+    required this.preventAccidentalTabcoinTapComment,
     super.key,
   });
 
@@ -169,7 +174,11 @@ class _PostBodyState extends State<PostBody> {
                       IconButton(
                         tooltip: 'Adicionar TabCoin',
                         onPressed: () async {
-                          await thumbPost('credit');
+                          if (widget.preventAccidentalTabcoinTapPost) {
+                            showPreventTabcoinTap('credit');
+                          } else {
+                            await thumbPost('credit');
+                          }
                         },
                         icon: const Icon(Icons.keyboard_arrow_up_rounded),
                       ),
@@ -179,7 +188,11 @@ class _PostBodyState extends State<PostBody> {
                       IconButton(
                         tooltip: 'Subtrair TabCoin',
                         onPressed: () async {
-                          await thumbPost('debit');
+                          if (widget.preventAccidentalTabcoinTapPost) {
+                            showPreventTabcoinTap('debit');
+                          } else {
+                            await thumbPost('debit');
+                          }
                         },
                         icon: const Icon(Icons.keyboard_arrow_down_rounded),
                       ),
@@ -273,6 +286,8 @@ class _PostBodyState extends State<PostBody> {
                           data,
                           apiContent: widget.apiContent,
                           messengerService: widget.messengerService,
+                          preventAccidentalTabcoinTapComment:
+                              widget.preventAccidentalTabcoinTapComment,
                         );
                       }
 
@@ -289,6 +304,32 @@ class _PostBodyState extends State<PostBody> {
           ),
         ),
       );
+
+  void showPreventTabcoinTap(String transactionType) {
+    showDialog<void>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Deseja realmente fazer isso?'),
+        content: const Text(
+            'Você está vendo isso pois habilitou nas configurações a prevenção de toque acidental de tabcoin.'),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('Não'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+          TextButton(
+            child: const Text('Sim'),
+            onPressed: () async {
+              await thumbPost(transactionType);
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      ),
+    );
+  }
 
   Future<void> thumbPost(String transactionType) async {
     try {
