@@ -23,7 +23,7 @@ class _ProfileViewPageState extends State<ProfileViewPage> {
   MessengerService messengerService = MessengerService();
   UserFeaturesService userFeaturesService = UserFeaturesService();
 
-  bool canEdit = false;
+  bool canBan = false;
 
   final PagingController<int, dynamic> _contentListController =
       PagingController(firstPageKey: 1);
@@ -59,14 +59,11 @@ class _ProfileViewPageState extends State<ProfileViewPage> {
   }
 
   Future<void> getParams() async {
-    final bool canEditAndDeleteContentOthers =
-        await userFeaturesService.hasFeature('update:content:others');
+    final bool canBanUser = await userFeaturesService.hasFeature('ban:user');
 
-    if (canEditAndDeleteContentOthers) {
-      setState(() {
-        canEdit = true;
-      });
-    }
+    setState(() {
+      canBan = canBanUser;
+    });
   }
 
   Future<void> banUser() async {
@@ -125,7 +122,7 @@ class _ProfileViewPageState extends State<ProfileViewPage> {
           ),
           actions: [
             Visibility(
-              visible: canEdit,
+              visible: canBan,
               child: PopupMenuButton(
                 elevation: 3.2,
                 onSelected: selectMenuItem,
