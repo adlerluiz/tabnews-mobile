@@ -15,6 +15,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
   late String _theme = 'light';
   late String _launchUrlMode = 'internal';
+  late String _preventAccidentalTabcoinTap = 'none';
 
   late PackageInfo packageInfo = PackageInfo(
     appName: 'Desconhecido',
@@ -34,6 +35,8 @@ class _SettingsPageState extends State<SettingsPage> {
     _theme = await storage.sharedPreferencesGet('theme', 'system');
     _launchUrlMode =
         await storage.sharedPreferencesGet('launch_url_mode', 'internal');
+    _preventAccidentalTabcoinTap = await storage.sharedPreferencesGet(
+        'prevent_accidental_tabcoin_tap', _preventAccidentalTabcoinTap);
 
     packageInfo = await PackageInfo.fromPlatform();
     setState(() {});
@@ -49,6 +52,12 @@ class _SettingsPageState extends State<SettingsPage> {
   void setLaunchUrlMode(String value) {
     _launchUrlMode = value;
     storage.sharedPreferencesAddString('launch_url_mode', value);
+    setState(() {});
+  }
+
+  void setPreventAccidentalTabcoinTap(String value) {
+    _preventAccidentalTabcoinTap = value;
+    storage.sharedPreferencesAddString('prevent_accidental_tabcoin_tap', value);
     setState(() {});
   }
 
@@ -193,6 +202,148 @@ class _SettingsPageState extends State<SettingsPage> {
                       child: const Text('Navegador'),
                     ),
                   ),
+                ],
+              ),
+              const ListTile(
+                title: Text('Tabcoin acidental'),
+                subtitle: Text(
+                    'Prevenir toque acidental de tabcoin, solicitando sempre confirmação'),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  SizedBox(
+                    width: 55,
+                    child: Tooltip(
+                      message: 'Desativado',
+                      child: ElevatedButton(
+                        style: ButtonStyle(
+                          foregroundColor: MaterialStateProperty.all(
+                            (_preventAccidentalTabcoinTap == 'none')
+                                ? Colors.white
+                                : null,
+                          ),
+                          backgroundColor: MaterialStateProperty.all(
+                            (_preventAccidentalTabcoinTap == 'none')
+                                ? Colors.blue
+                                : null,
+                          ),
+                          shape: MaterialStateProperty.all(
+                            const RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(8)),
+                            ),
+                          ),
+                        ),
+                        onPressed: () {
+                          setPreventAccidentalTabcoinTap('none');
+                        },
+                        //child: const Text('Desativado'),
+                        child: const Icon(
+                          Icons.block,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    width: 55,
+                    child: Tooltip(
+                      message: 'Na publicação',
+                      child: ElevatedButton(
+                        style: ButtonStyle(
+                          foregroundColor: MaterialStateProperty.all(
+                            (_preventAccidentalTabcoinTap == 'post')
+                                ? Colors.white
+                                : null,
+                          ),
+                          backgroundColor: MaterialStateProperty.all(
+                            (_preventAccidentalTabcoinTap == 'post')
+                                ? Colors.blue
+                                : null,
+                          ),
+                          shape: MaterialStateProperty.all(
+                            const RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(8)),
+                            ),
+                          ),
+                        ),
+                        onPressed: () {
+                          setPreventAccidentalTabcoinTap('post');
+                        },
+                        //child: const Text('Publicação'),
+                        child: const Icon(
+                          Icons.featured_play_list_outlined,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    width: 55,
+                    child: Tooltip(
+                      message: 'Nos comentários',
+                      child: ElevatedButton(
+                        style: ButtonStyle(
+                          foregroundColor: MaterialStateProperty.all(
+                            (_preventAccidentalTabcoinTap == 'comment')
+                                ? Colors.white
+                                : null,
+                          ),
+                          backgroundColor: MaterialStateProperty.all(
+                            (_preventAccidentalTabcoinTap == 'comment')
+                                ? Colors.blue
+                                : null,
+                          ),
+                          shape: MaterialStateProperty.all(
+                            const RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(8)),
+                            ),
+                          ),
+                        ),
+                        onPressed: () {
+                          setPreventAccidentalTabcoinTap('comment');
+                        },
+                        //child: const Text('Comentário'),
+                        child: const Icon(
+                          Icons.mode_comment_outlined,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    width: 55,
+                    child: Tooltip(
+                      message: 'Sempre',
+                      child: ElevatedButton(
+                        style: ButtonStyle(
+                          foregroundColor: MaterialStateProperty.all(
+                            (_preventAccidentalTabcoinTap == 'all')
+                                ? Colors.white
+                                : null,
+                          ),
+                          backgroundColor: MaterialStateProperty.all(
+                            (_preventAccidentalTabcoinTap == 'all')
+                                ? Colors.blue
+                                : null,
+                          ),
+                          shape: MaterialStateProperty.all(
+                            const RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(8)),
+                            ),
+                          ),
+                        ),
+                        onPressed: () {
+                          setPreventAccidentalTabcoinTap('all');
+                        },
+                        //child: const Text('Sempre'),
+                        child: const Icon(
+                          Icons.all_inclusive,
+                        ),
+                      ),
+                    ),
+                  )
                 ],
               ),
               Padding(
