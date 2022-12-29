@@ -38,7 +38,7 @@ class BoxGenerateContentWidget extends StatelessWidget {
               itemBuilder: (context, data, index) {
                 final Content item = Content.fromJson(data);
 
-                if ((filterText.trim().isNotEmpty) && (!item.matchFilter(filterText))) {
+                if ((filterText.trim().isNotEmpty) && (!item.matchFilter(filterText.trim()))) {
                   return const SizedBox.shrink();
                 }
 
