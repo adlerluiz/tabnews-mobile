@@ -1,13 +1,17 @@
-import 'package:flutter/cupertino.dart';
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+
 import 'package:intl/intl.dart';
 import 'package:tabnews/builder/generate_user_link.dart';
 import 'package:tabnews/model/content.dart';
 import 'package:tabnews/page/content/content_form_comment_page.dart';
 import 'package:tabnews/page/content/content_view_page.dart';
 import 'package:tabnews/page/content/content_widgets/markdown_data.dart';
+import 'package:tabnews/page/login_page.dart';
 import 'package:tabnews/service/api_content.dart';
 import 'package:tabnews/service/messenger.dart';
+import 'package:tabnews/service/storage.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class BoxComments extends StatelessWidget {
@@ -43,8 +47,8 @@ class BoxComments extends StatelessWidget {
               decoration: BoxDecoration(
                 border: Border(
                   left: BorderSide(
-                    color: isChild
-                        ? const Color.fromARGB(100, 158, 158, 158)
+                    color: isChild 
+                        ? const Color.fromARGB(100, 158, 158, 158) 
                         : Colors.transparent,
                   ),
                 ),
@@ -127,7 +131,7 @@ class BoxComments extends StatelessWidget {
                                   },
                                   child: Text(
                                     timeago.format(
-                                        DateTime.parse(item.publishedAt!),
+                                        DateTime.parse(item.publishedAt!), 
                                         locale: 'pt_BR'),
                                     overflow: TextOverflow.ellipsis,
                                     maxLines: 1,
@@ -153,14 +157,22 @@ class BoxComments extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(8),
                               ),
                             ),
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute<dynamic>(
-                                  builder: (context) => ContentFormCommentPage(
-                                    id: item.id!,
-                                    title: item.body!,
+                            onPressed: () async {
+                              if (await StorageService().sharedPreferencesGetString('user_username', '') == '') {
+                                unawaited(
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute<void>(builder: (context) => const LoginPage()),
                                   ),
+                                );
+
+                                return;
+                              }
+
+                              unawaited(
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute<void>(
+                                      builder: (context) => ContentFormCommentPage(id: item.id!, title: item.body!)),
                                 ),
                               );
                             },
@@ -174,7 +186,7 @@ class BoxComments extends StatelessWidget {
                             isChild: true,
                             apiContent: apiContent,
                             messengerService: messengerService,
-                            preventAccidentalTabcoinTapComment:
+                            preventAccidentalTabcoinTapComment: 
                                 preventAccidentalTabcoinTapComment,
                           ),
                         ),

@@ -28,7 +28,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
   AuthenticatedHttpClient auth = AuthenticatedHttpClient();
 
   final PagingController<int, dynamic> _contentListController = 
-    PagingController(firstPageKey: 1);
+      PagingController(firstPageKey: 1);
 
   ValueNotifier<bool> valueNotifierIsLogged = ValueNotifier(false);
 
@@ -71,6 +71,10 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
 
   Future<dynamic> getData() async {
     try {
+      if (!await auth.isLogged()) {
+        return;
+      }
+
       valueNotifierIsLogged.value = true;
       return await apiUser.getMe();
     } catch (e) {
@@ -165,7 +169,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                         children: [
                           TooltipTabCounterWidget(
                             message: 'TabCoins',
-                            tabInfo: data.tabcoins.toString(),
+                            tabCount: data.tabcoins.toString(),
                             color: Colors.blue,
                           ),
                           const Padding(
@@ -173,7 +177,7 @@ class _ProfileHomePageState extends State<ProfileHomePage> {
                           ),
                           TooltipTabCounterWidget(
                             message: 'TabCash',
-                            tabInfo: data.tabcash.toString(),
+                            tabCount: data.tabcash.toString(),
                             color: Colors.green,
                           ),
                         ],

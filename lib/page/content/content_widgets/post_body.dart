@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:intl/intl.dart';
 import 'package:pinch_zoom_release_unzoom/pinch_zoom_release_unzoom.dart';
@@ -11,8 +14,10 @@ import 'package:tabnews/page/content/content_form_comment_page.dart';
 import 'package:tabnews/page/content/content_widgets/box_comments.dart';
 import 'package:tabnews/page/content/content_widgets/launch_url_wrapper.dart';
 import 'package:tabnews/page/content/content_widgets/markdown_data.dart';
+import 'package:tabnews/page/login_page.dart';
 import 'package:tabnews/service/api_content.dart';
 import 'package:tabnews/service/messenger.dart';
+import 'package:tabnews/service/storage.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class PostBody extends StatefulWidget {
@@ -50,8 +55,8 @@ class _PostBodyState extends State<PostBody> {
   @override
   Widget build(BuildContext context) => Scrollbar(
         child: SingleChildScrollView(
-          physics: blockScroll
-              ? const NeverScrollableScrollPhysics()
+          physics: blockScroll 
+              ? const NeverScrollableScrollPhysics() 
               : const ScrollPhysics(),
           controller: widget.pageScrollController,
           padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -74,7 +79,7 @@ class _PostBodyState extends State<PostBody> {
                               DateTime.parse(widget.contentData.publishedAt!)),
                       child: Text(
                         timeago.format(
-                            DateTime.parse(widget.contentData.publishedAt!),
+                            DateTime.parse(widget.contentData.publishedAt!), 
                             locale: 'pt_BR'),
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,
@@ -107,8 +112,8 @@ class _PostBodyState extends State<PostBody> {
                           '${widget.data.title}',
                           style: TextStyle(
                             fontSize: 17,
-                            fontWeight: widget.isComment
-                                ? FontWeight.normal
+                            fontWeight: widget.isComment 
+                                ? FontWeight.normal 
                                 : FontWeight.w500,
                           ),
                         ),
@@ -204,8 +209,8 @@ class _PostBodyState extends State<PostBody> {
                         TextStyle(fontSize: 13),
                       ),
                       foregroundColor: MaterialStateProperty.all(
-                        (Theme.of(context).brightness == Brightness.light)
-                            ? Colors.black
+                        (Theme.of(context).brightness == Brightness.light) 
+                            ? Colors.black 
                             : Colors.white70,
                       ),
                     ),
@@ -250,19 +255,30 @@ class _PostBodyState extends State<PostBody> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute<dynamic>(
-                        builder: (context) => ContentFormCommentPage(
-                          id: widget.contentData.id!,
-                          title: widget.contentData.title ??
-                              widget.contentData.body!,
+                  onPressed: () async {
+                    if (await StorageService().sharedPreferencesGetString('user_username', '') == '') {
+                      unawaited(
+                        Navigator.of(context).push(
+                          MaterialPageRoute<void>(builder: (context) => const LoginPage()),
                         ),
-                      ),
-                    ).then((value) {
-                      setState(() {});
-                    });
+                      );
+
+                      return;
+                    }
+
+                    unawaited(
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute<dynamic>(
+                          builder: (context) => ContentFormCommentPage(
+                            id: widget.contentData.id!,
+                            title: widget.contentData.title ?? widget.contentData.body!,
+                          ),
+                        ),
+                      ).then((value) {
+                        setState(() {});
+                      }),
+                    );
                   },
                   child: const Text('Responder'),
                 ),
@@ -286,8 +302,8 @@ class _PostBodyState extends State<PostBody> {
                           data,
                           apiContent: widget.apiContent,
                           messengerService: widget.messengerService,
-                          preventAccidentalTabcoinTapComment:
-                              widget.preventAccidentalTabcoinTapComment,
+                          preventAccidentalTabcoinTapComment: 
+                            widget.preventAccidentalTabcoinTapComment,
                         );
                       }
 
@@ -359,7 +375,7 @@ class _PostBodyState extends State<PostBody> {
 
   Future<dynamic> getCommentList() async {
     final List<dynamic> commentListData = await widget.apiContent.getComments(
-        widget.contentData.ownerUsername!, widget.contentData.slug!);
+            widget.contentData.ownerUsername!, widget.contentData.slug!);
     return commentListData;
   }
 }

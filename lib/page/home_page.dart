@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -5,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:tabnews/constants.dart' as constants;
 import 'package:tabnews/page/content/content_form_page.dart';
+import 'package:tabnews/page/login_page.dart';
 import 'package:tabnews/page/profile/profile_home_page.dart';
 import 'package:tabnews/page/widgets/box_generate_content_widget.dart';
 import 'package:tabnews/service/api_content.dart';
@@ -226,11 +228,23 @@ class _HomePageState extends State<HomePage>
         ),
         floatingActionButton: FloatingActionButton(
           tooltip: 'Publicar novo conteúdo',
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute<dynamic>(
-                builder: (context) => const ContentFormPage(),
+          onPressed: () async {
+            if (await storage.sharedPreferencesGetString('user_username', '') == '') {
+              unawaited(
+                Navigator.of(context).push(
+                  MaterialPageRoute<bool>(builder: (context) => const LoginPage()),
+                ),
+              );
+
+              return;
+            }
+
+            unawaited(
+              Navigator.push(
+                context,
+                MaterialPageRoute<dynamic>(
+                  builder: (context) => const ContentFormPage(),
+                ),
               ),
             );
           },

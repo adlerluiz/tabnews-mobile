@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 
 class TooltipTabCounterWidget extends StatelessWidget {
   final String message;
-  final String tabInfo;
+  final String tabCount;
   final Color color;
 
-  const TooltipTabCounterWidget({required this.message, required this.tabInfo, required this.color, super.key});
+  const TooltipTabCounterWidget({required this.message, required this.tabCount, required this.color, super.key});
 
   @override
   Widget build(BuildContext context) => Tooltip(
@@ -22,7 +22,7 @@ class TooltipTabCounterWidget extends StatelessWidget {
               ),
             ),
             const Padding(padding: EdgeInsets.only(left: 3)),
-            Text(tabInfo)
+            Text(tabCount)
           ],
         ),
       );
