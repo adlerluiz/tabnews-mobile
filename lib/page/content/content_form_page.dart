@@ -3,8 +3,52 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:markdown_editable_textinput/format_markdown.dart';
 import 'package:markdown_editable_textinput/markdown_text_input.dart';
 import 'package:tabnews/model/content.dart';
+import 'package:tabnews/model/post_template.dart';
 import 'package:tabnews/service/api_content.dart';
 import 'package:tabnews/service/messenger.dart';
+
+List<PostTemplate> templateList = [
+  PostTemplate(
+    icon: Icons.info_rounded,
+    iconColor: Colors.blue,
+    title: 'Ajuda',
+    titlePrefix: 'Ajuda: ',
+    description: 'Preciso de um auxílio sobre um assunto',
+    commentHint: 'Descreva aqui a ajuda que você precisa.',
+  ),
+  PostTemplate(
+    icon: Icons.lightbulb_rounded,
+    iconColor: Colors.yellow,
+    title: 'Dica',
+    titlePrefix: 'Dica: ',
+    description: 'Quero publicar alguma dica para ajudar as pessoas',
+    commentHint: 'Descreva aqui a sua dica valiosa!',
+  ),
+  PostTemplate(
+    icon: Icons.question_mark,
+    iconColor: Colors.redAccent,
+    title: 'Dúvida',
+    titlePrefix: 'Dúvida: ',
+    description: 'Estou incerto sobre algo, preciso tirar uma dúvida',
+    commentHint: 'Descreva aqui a dúvida que está te matando.',
+  ),
+  PostTemplate(
+    icon: Icons.local_parking_rounded,
+    iconColor: Colors.green,
+    title: 'Projeto',
+    titlePrefix: 'Pitch: ',
+    description: 'Quero apresentar um projeto pessoal',
+    commentHint: 'Descreva aqui sobre o seu belo projeto',
+  ),
+  PostTemplate(
+    icon: Icons.mode_comment_outlined,
+    iconColor: Colors.black,
+    title: 'Texto livre',
+    titlePrefix: '',
+    description: 'Só quero escrever um texto',
+    commentHint: 'Descreva aqui seu texto',
+  ),
+];
 
 class ContentFormPage extends StatefulWidget {
   const ContentFormPage({super.key, this.ownerUsername = '', this.slug = ''});
@@ -35,15 +79,17 @@ class _ContentFormPageState extends State<ContentFormPage> {
 
   FocusNode titleFocusNode = FocusNode();
 
+  String commentHint = '';
+
   @override
   void initState() {
     super.initState();
 
-    titleFocusNode.requestFocus();
-
     if (widget.ownerUsername.isNotEmpty) {
       isEdit = true;
       getEditData();
+    } else {
+      Future.delayed(const Duration(milliseconds: 500), showTemplateDialog);
     }
   }
 
@@ -54,6 +100,57 @@ class _ContentFormPageState extends State<ContentFormPage> {
     mkdTextController.dispose();
     sourceTextController.dispose();
     titleFocusNode.dispose();
+  }
+
+  void showTemplateDialog() {
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) => AlertDialog(
+        contentPadding: const EdgeInsets.all(6),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+        title: const Text(
+          'Que tipo de conteúdo, você deseja publicar?',
+          style: TextStyle(fontSize: 18),
+        ),
+        content: SizedBox(
+          width: double.maxFinite,
+          height: 355,
+          child: ListView.builder(
+            shrinkWrap: true,
+            itemCount: templateList.length,
+            itemBuilder: (context, index) => Card(
+              elevation: 0,
+              surfaceTintColor: templateList[index].iconColor,
+              child: ListTile(
+                dense: true,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                leading: Icon(
+                  templateList[index].icon,
+                  color: templateList[index].iconColor,
+                ),
+                minLeadingWidth: 10,
+                title: Text(templateList[index].title),
+                subtitle: Text(templateList[index].description),
+                onTap: () {
+                  setState(() {
+                    titleTextController.text = templateList[index].titlePrefix;
+                    commentHint = templateList[index].commentHint;
+                  });
+                  Navigator.pop(context);
+                },
+              ),
+            ),
+          ),
+        ),
+      ),
+    ).then((value) {
+      titleFocusNode.requestFocus();
+    });
   }
 
   Future<void> getEditData() async {
@@ -153,7 +250,6 @@ class _ContentFormPageState extends State<ContentFormPage> {
                               Radius.circular(6),
                             ),
                           ),
-                          //filled: true,
                           hintText: 'Título',
                           hintStyle: TextStyle(
                             fontSize: 15,
@@ -168,7 +264,7 @@ class _ContentFormPageState extends State<ContentFormPage> {
                           comment = value;
                         },
                         comment,
-                        label: 'Seu comentário',
+                        label: commentHint,
                         actions: MarkdownType.values,
                         controller: mkdTextController,
                       ),

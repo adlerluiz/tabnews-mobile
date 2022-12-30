@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:tabnews/model/user.dart';
 import 'package:tabnews/page/register_page.dart';
@@ -52,6 +54,8 @@ class _LoginPageState extends State<LoginPage> {
 
       await storage.sharedPreferencesAddString('user_id', user.id);
       await storage.sharedPreferencesAddString('user_username', user.username);
+      await storage.sharedPreferencesAddString(
+          'user_features', jsonEncode(user.features));
 
       messengerService.show(context, text: 'Logado com sucesso!');
       Navigator.of(context).pop();
@@ -100,6 +104,7 @@ class _LoginPageState extends State<LoginPage> {
                     padding: EdgeInsets.only(bottom: 30),
                   ),
                   TextField(
+                    keyboardType: TextInputType.emailAddress,
                     controller: controllerEmail,
                     decoration: const InputDecoration(
                       contentPadding:
@@ -144,7 +149,7 @@ class _LoginPageState extends State<LoginPage> {
                           _obscurePassword
                               ? Icons.remove_red_eye
                               : Icons.emergency,
-                          color: Colors.black38,
+                          color: Theme.of(context).textTheme.bodyText1?.color,
                           size: 18,
                         ),
                       ),

@@ -19,7 +19,7 @@ App desenvolvido em Flutter para consumir a api do site https://www.tabnews.com.
 
 1. Faça o clone do repositório
 ```
-git clone https://github.com/coffee-is-power/tabnews-mobile.git
+git clone https://github.com/adlerluiz/tabnews-mobile.git
 ```
 
 2. Instale as dependencias do projeto
@@ -33,4 +33,4 @@ flutter run
 ```
 
 ## TODO
-- Melhorar a visulização do markdown
+- Ver issues

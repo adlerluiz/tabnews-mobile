@@ -1,20 +1,23 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
-import 'package:tabnews/builder/generate_content.dart';
-import 'package:tabnews/builder/loading_content_image.dart';
 import 'package:tabnews/constants.dart' as constants;
-import 'package:tabnews/model/content.dart';
 import 'package:tabnews/page/content/content_form_page.dart';
+import 'package:tabnews/page/login_page.dart';
 import 'package:tabnews/page/profile/profile_home_page.dart';
+import 'package:tabnews/page/widgets/box_generate_content_widget.dart';
 import 'package:tabnews/service/api_content.dart';
 import 'package:tabnews/service/storage.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
-
 class HomePage extends StatefulWidget {
-  const HomePage({super.key, required this.appName});
+  const HomePage({
+    required this.appName,
+    super.key,
+  });
 
   final String appName;
 
@@ -22,7 +25,7 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage>
+class _HomePageState extends State<HomePage> 
     with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   StorageService storage = StorageService();
 
@@ -30,16 +33,19 @@ class _HomePageState extends State<HomePage>
 
   int _navigationTabPageIndex = 1;
 
-  final PagingController<int, dynamic> _favoritePagingController =
+  final PagingController<int, dynamic> _favoritePagingController = 
       PagingController(firstPageKey: 1);
 
-  final PagingController<int, dynamic> _relevantPagingController =
+  final PagingController<int, dynamic> _relevantPagingController = 
       PagingController(firstPageKey: 1);
 
-  final PagingController<int, dynamic> _recentPagingController =
+  final PagingController<int, dynamic> _recentPagingController = 
       PagingController(firstPageKey: 1);
 
   ApiContent apiContent = ApiContent();
+
+  // Filter controller
+  TextEditingController filterController = TextEditingController();
 
   @override
   void initState() {
@@ -80,7 +86,7 @@ class _HomePageState extends State<HomePage>
 
   Future<void> _fetchFavoritePage(int pageKey) async {
     try {
-      var contentList =
+      var contentList = 
           await storage.sharedPreferencesGet('favorite_list', '[]');
 
       contentList = jsonDecode(contentList).reversed.toList();
@@ -100,7 +106,7 @@ class _HomePageState extends State<HomePage>
 
   Future<void> _fetchRelevantPage(int pageKey) async {
     try {
-      final contentList =
+      final contentList = 
           await apiContent.getList(pagina: pageKey, estrategia: 'relevant');
 
       final isLastPage = contentList.length != constants.pageSize;
@@ -137,13 +143,40 @@ class _HomePageState extends State<HomePage>
     setState(() {
       _navigationTabPageIndex = index;
     });
+
+    if (!mounted) {
+      return;
+    }
+
     _navigationTabController?.animateTo(index);
   }
 
+  bool isFiltering = false;
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
-          title: Text(widget.appName),
+          leading: isFiltering
+              ? IconButton(
+                  onPressed: () => setState(() {
+                    // Hide and reset filter
+                    isFiltering = false;
+                    filterController.text = '';
+                  }),
+                  icon: const Icon(Icons.close),
+                )
+              : IconButton(
+                  onPressed: () => setState(() {
+                    isFiltering = true;
+                  }),
+                  icon: const Icon(Icons.search),
+                ),
+          title: isFiltering
+              ? TextField(
+                  controller: filterController,
+                  onChanged: (newText) => setState(() {}),
+                  autofocus: true,
+                )
+              : Text(widget.appName),
           actions: [
             IconButton(
               tooltip: 'Perfil',
@@ -162,96 +195,56 @@ class _HomePageState extends State<HomePage>
         body: TabBarView(
           controller: _navigationTabController,
           children: [
-            RefreshIndicator(
-              onRefresh: () => Future.sync(
-                _favoritePagingController.refresh,
-              ),
-              child: PagedListView(
-                pagingController: _favoritePagingController,
-                builderDelegate: PagedChildBuilderDelegate<dynamic>(
-                  noItemsFoundIndicatorBuilder: (context) => Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Text(
-                        'Nenhum favorito encontrado',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        'Os favoritos são salvos somente no seu celular',
-                        style: TextStyle(color: Colors.grey),
-                      )
-                    ],
+            BoxGenerateContentWidget(
+              pagingController: _favoritePagingController,
+              filterText: filterController.text,
+              showComments: false,
+              showTabCoins: false,
+              noItemsFoundIndicatorBuilder: (context) => Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  Text(
+                    'Nenhum favorito encontrado',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                  firstPageProgressIndicatorBuilder: (context) =>
-                      const LoadingContentImageBuilder(),
-                  itemBuilder: (context, data, index) {
-                    final Content item = Content.fromJson(data);
-
-                    return GenerateContentBuilder(
-                      contentData: item,
-                      index: index,
-                      showTabcoins: false,
-                      showComments: false,
-                    );
-                  },
-                ),
+                  Text(
+                    'Os favoritos são salvos somente no seu celular',
+                    style: TextStyle(color: Colors.grey),
+                  )
+                ],
               ),
             ),
-            RefreshIndicator(
-              onRefresh: () => Future.sync(
-                _relevantPagingController.refresh,
-              ),
-              child: Center(
-                child: PagedListView(
-                  pagingController: _relevantPagingController,
-                  builderDelegate: PagedChildBuilderDelegate<dynamic>(
-                    firstPageProgressIndicatorBuilder: (context) =>
-                        const LoadingContentImageBuilder(),
-                    itemBuilder: (context, data, index) {
-                      final Content item = Content.fromJson(data);
-
-                      return GenerateContentBuilder(
-                        contentData: item,
-                        index: index,
-                      );
-                    },
-                  ),
-                ),
-              ),
+            BoxGenerateContentWidget(
+              pagingController: _relevantPagingController,
+              filterText: filterController.text,
             ),
-            RefreshIndicator(
-              child: Center(
-                child: PagedListView(
-                  pagingController: _recentPagingController,
-                  builderDelegate: PagedChildBuilderDelegate<dynamic>(
-                    firstPageProgressIndicatorBuilder: (context) =>
-                        const LoadingContentImageBuilder(),
-                    itemBuilder: (context, item, index) {
-                      item = Content.fromJson(item);
-
-                      return GenerateContentBuilder(
-                        contentData: item,
-                        index: index,
-                      );
-                    },
-                  ),
-                ),
-              ),
-              onRefresh: () => Future.sync(
-                _recentPagingController.refresh,
-              ),
+            BoxGenerateContentWidget(
+              pagingController: _recentPagingController,
+              filterText: filterController.text,
             ),
           ],
         ),
         floatingActionButton: FloatingActionButton(
           tooltip: 'Publicar novo conteúdo',
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute<dynamic>(
-                builder: (context) => const ContentFormPage(),
+          onPressed: () async {
+            if (await storage.sharedPreferencesGetString('user_username', '') == '') {
+              unawaited(
+                Navigator.of(context).push(
+                  MaterialPageRoute<bool>(builder: (context) => const LoginPage()),
+                ),
+              );
+
+              return;
+            }
+
+            unawaited(
+              Navigator.push(
+                context,
+                MaterialPageRoute<dynamic>(
+                  builder: (context) => const ContentFormPage(),
+                ),
               ),
             );
           },
@@ -263,20 +256,20 @@ class _HomePageState extends State<HomePage>
           selectedIndex: _navigationTabPageIndex,
           destinations: [
             NavigationDestination(
-              icon: (_navigationTabPageIndex == 0)
-                  ? const Icon(Icons.star)
+              icon: (_navigationTabPageIndex == 0) 
+                  ? const Icon(Icons.star) 
                   : const Icon(Icons.star_border),
               label: 'Favoritos',
             ),
             NavigationDestination(
-              icon: (_navigationTabPageIndex == 1)
-                  ? const Icon(Icons.radar)
+              icon: (_navigationTabPageIndex == 1) 
+                  ? const Icon(Icons.radar) 
                   : const Icon(Icons.radar_outlined),
               label: 'Relevantes',
             ),
             NavigationDestination(
-              icon: (_navigationTabPageIndex == 2)
-                  ? const Icon(Icons.timelapse)
+              icon: (_navigationTabPageIndex == 2) 
+                  ? const Icon(Icons.timelapse) 
                   : const Icon(Icons.timelapse_outlined),
               label: 'Recentes',
             ),

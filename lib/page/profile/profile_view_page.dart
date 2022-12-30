@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
+
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
-import 'package:tabnews/builder/generate_content.dart';
-import 'package:tabnews/builder/loading_content_image.dart';
 import 'package:tabnews/constants.dart' as constants;
-import 'package:tabnews/model/content.dart';
+import 'package:tabnews/page/widgets/box_generate_content_widget.dart';
 import 'package:tabnews/service/api_content.dart';
 import 'package:tabnews/service/api_user.dart';
+import 'package:tabnews/service/messenger.dart';
+import 'package:tabnews/service/user_features.dart';
 
 class ProfileViewPage extends StatefulWidget {
-  const ProfileViewPage({super.key, required this.ownerUsername});
+  const ProfileViewPage({required this.ownerUsername, super.key});
 
   final String ownerUsername;
 
@@ -19,6 +20,10 @@ class ProfileViewPage extends StatefulWidget {
 class _ProfileViewPageState extends State<ProfileViewPage> {
   ApiUser apiUser = ApiUser();
   ApiContent apiContent = ApiContent();
+  MessengerService messengerService = MessengerService();
+  UserFeaturesService userFeaturesService = UserFeaturesService();
+
+  bool canBan = false;
 
   final PagingController<int, dynamic> _contentListController =
       PagingController(firstPageKey: 1);
@@ -44,13 +49,67 @@ class _ProfileViewPageState extends State<ProfileViewPage> {
   @override
   void initState() {
     super.initState();
-
+    getParams();
     _contentListController.addPageRequestListener(_fetchContentList);
   }
 
   @override
   void dispose() {
     super.dispose();
+  }
+
+  Future<void> getParams() async {
+    final bool canBanUser = await userFeaturesService.hasFeature('ban:user');
+
+    setState(() {
+      canBan = canBanUser;
+    });
+  }
+
+  Future<void> banUser() async {
+    try {
+      await apiUser.banUser(widget.ownerUsername);
+      _contentListController.refresh();
+      messengerService.show(context, text: 'Usuário banido!');
+    } catch (e) {
+      messengerService.show(context, text: e.toString());
+    }
+  }
+
+  void selectMenuItem(int value) {
+    switch (value) {
+      case 0:
+        showDialog<void>(
+          context: context,
+          builder: (BuildContext context) => AlertDialog(
+            title: const Text('Atenção: Você está realizando um Nuke!'),
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: <Widget>[
+                  Text(
+                      'Deseja banir o usuário ${widget.ownerUsername} e desfazer todas as suas ações?'),
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('Não'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+              TextButton(
+                child: const Text('Sim'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  banUser();
+                },
+              ),
+            ],
+          ),
+        );
+        break;
+    }
   }
 
   @override
@@ -61,26 +120,47 @@ class _ProfileViewPageState extends State<ProfileViewPage> {
             style: const TextStyle(fontSize: 18),
             overflow: TextOverflow.fade,
           ),
-        ),
-        body: RefreshIndicator(
-          onRefresh: () => Future.sync(
-            _contentListController.refresh,
-          ),
-          child: PagedListView(
-            pagingController: _contentListController,
-            builderDelegate: PagedChildBuilderDelegate<dynamic>(
-              firstPageProgressIndicatorBuilder: (context) =>
-                  const LoadingContentImageBuilder(),
-              itemBuilder: (context, data, index) {
-                final Content item = Content.fromJson(data);
-                return GenerateContentBuilder(
-                  contentData: item,
-                  index: index,
-                  showUsername: false,
-                );
-              },
+          actions: [
+            Visibility(
+              visible: canBan,
+              child: PopupMenuButton(
+                elevation: 3.2,
+                onSelected: selectMenuItem,
+                tooltip: 'Opções',
+                itemBuilder: (BuildContext context) => [
+                  PopupMenuItem(
+                    value: 0,
+                    child: Row(
+                      children: const [
+                        Padding(
+                          padding: EdgeInsets.only(right: 12),
+                          child: Icon(
+                            Icons.delete_outlined,
+                            color: Colors.redAccent,
+                            size: 20,
+                          ),
+                        ),
+                        Text(
+                          'Nuke',
+                          style: TextStyle(color: Colors.redAccent),
+                        )
+                      ],
+                    ),
+                  ),
+                ],
+                child: const SizedBox(
+                  width: 48,
+                  child: Icon(
+                    Icons.more_vert_outlined,
+                  ),
+                ),
+              ),
             ),
-          ),
+          ],
+        ),
+        body: BoxGenerateContentWidget(
+          pagingController: _contentListController,
+          showUserName: false,
         ),
       );
 }
