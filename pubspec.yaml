@@ -37,6 +37,7 @@ dev_dependencies:
     sdk: flutter
 
   flutter_lints: ^2.0.0
+  flutter_launcher_icons: ^0.11.0
 
 flutter:
   uses-material-design: true
@@ -45,3 +46,10 @@ flutter:
     - assets/images/logo.png
     - assets/images/loading.gif
     - assets/images/error.png
+
+# Icon generation info
+flutter_icons:
+  image_path: 'stores/logo.png'
+  android: true
+  ios: true
+  remove_alpha_ios: true
